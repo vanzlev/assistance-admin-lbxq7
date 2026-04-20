@@ -1,0 +1,1214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Assistance Manager</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --blue: #1565C0;
+    --blue-light: #1976D2;
+    --blue-soft: #E3F2FD;
+    --blue-mid: #BBDEFB;
+    --red: #C62828;
+    --red-soft: #FFEBEE;
+    --green: #2E7D32;
+    --green-soft: #E8F5E9;
+    --orange: #E65100;
+    --orange-soft: #FFF3E0;
+    --purple: #6A1B9A;
+    --purple-soft: #F3E5F5;
+    --teal: #00695C;
+    --teal-soft: #E0F2F1;
+    --brown: #4E342E;
+    --brown-soft: #EFEBE9;
+    --grey: #455A64;
+    --grey-soft: #ECEFF1;
+    --text: #1A2332;
+    --text-muted: #64748B;
+    --border: #E2E8F0;
+    --bg: #F8FAFC;
+    --white: #FFFFFF;
+    --sidebar-w: 260px;
+    --radius: 12px;
+    --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 4px 16px rgba(0,0,0,0.04);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); font-size: 14px; }
+  button { font-family: inherit; cursor: pointer; }
+  input, select, textarea { font-family: inherit; }
+
+  /* ---- LAYOUT ---- */
+  #app { display: flex; min-height: 100vh; }
+  #sidebar {
+    width: var(--sidebar-w); background: var(--blue); color: white;
+    display: flex; flex-direction: column; flex-shrink: 0;
+    position: fixed; top: 0; left: 0; height: 100vh; z-index: 100;
+    transition: transform .3s ease;
+  }
+  #main { margin-left: var(--sidebar-w); flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
+  #topbar {
+    background: white; border-bottom: 1px solid var(--border);
+    padding: 0 24px; height: 64px; display: flex; align-items: center;
+    gap: 16px; position: sticky; top: 0; z-index: 50;
+  }
+  #content { padding: 24px; flex: 1; }
+
+  /* ---- SIDEBAR ---- */
+  .sb-brand { padding: 20px 20px 16px; border-bottom: 1px solid rgba(255,255,255,.15); }
+  .sb-brand h1 { font-size: 16px; font-weight: 700; line-height: 1.2; }
+  .sb-brand p { font-size: 11px; opacity: .65; margin-top: 2px; }
+  .sb-nav { flex: 1; padding: 12px 10px; display: flex; flex-direction: column; gap: 2px; }
+  .sb-item {
+    display: flex; align-items: center; gap: 12px; padding: 10px 14px;
+    border-radius: 8px; cursor: pointer; font-size: 13.5px; font-weight: 500;
+    color: rgba(255,255,255,.75); transition: all .15s;
+    border: none; background: none; width: 100%; text-align: left;
+  }
+  .sb-item:hover { background: rgba(255,255,255,.12); color: white; }
+  .sb-item.active { background: rgba(255,255,255,.18); color: white; }
+  .sb-item svg { width: 18px; height: 18px; flex-shrink: 0; }
+  .sb-footer { padding: 16px 20px; border-top: 1px solid rgba(255,255,255,.15); font-size: 11px; opacity: .5; }
+  .sb-user { padding: 12px 20px; border-top: 1px solid rgba(255,255,255,.15); }
+  .sb-user-name { font-size: 13px; font-weight: 600; }
+  .sb-user-role { font-size: 11px; opacity: .65; margin-top: 1px; }
+  .sb-logout {
+    margin-top: 10px; width: 100%; padding: 8px; border-radius: 8px;
+    background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.2);
+    color: white; font-size: 12px; font-weight: 500; cursor: pointer;
+    transition: background .15s;
+  }
+  .sb-logout:hover { background: rgba(255,255,255,.2); }
+
+  /* ---- TOPBAR ---- */
+  .tb-menu { display: none; background: none; border: none; padding: 4px; }
+  .tb-title { font-size: 17px; font-weight: 700; flex: 1; }
+  .tb-search {
+    display: flex; align-items: center; gap: 8px; background: var(--bg);
+    border: 1px solid var(--border); border-radius: 8px; padding: 6px 12px;
+    width: 260px;
+  }
+  .tb-search input { border: none; background: none; outline: none; font-size: 13px; width: 100%; }
+  .tb-search svg { opacity: .4; flex-shrink: 0; }
+
+  /* ---- CARDS / TABLES ---- */
+  .card { background: white; border-radius: var(--radius); box-shadow: var(--shadow); border: 1px solid var(--border); }
+  .card-header { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 12px; }
+  .card-header h2 { font-size: 15px; font-weight: 700; flex: 1; }
+  .card-body { padding: 20px; }
+
+  .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; margin-bottom: 24px; }
+  .stat-card {
+    background: white; border-radius: var(--radius); border: 1px solid var(--border);
+    padding: 16px 20px; box-shadow: var(--shadow);
+  }
+  .stat-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .5px; color: var(--text-muted); margin-bottom: 6px; }
+  .stat-value { font-size: 28px; font-weight: 700; font-family: 'DM Mono', monospace; }
+  .stat-sub { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+
+  /* Table */
+  .tbl-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { text-align: left; padding: 10px 14px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .4px; color: var(--text-muted); border-bottom: 2px solid var(--border); background: var(--bg); }
+  td { padding: 12px 14px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+  tr:hover td { background: #FAFBFF; }
+  tr:last-child td { border-bottom: none; }
+
+  /* Badges */
+  .badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 3px 8px; border-radius: 20px; font-size: 11px; font-weight: 600;
+  }
+  .badge-medical { background: var(--red-soft); color: var(--red); }
+  .badge-educational { background: var(--blue-soft); color: var(--blue); }
+  .badge-hospitalization { background: var(--purple-soft); color: var(--purple); }
+  .badge-burial { background: var(--grey-soft); color: var(--grey); }
+  .badge-solicitation { background: var(--orange-soft); color: var(--orange); }
+  .badge-invitation { background: var(--teal-soft); color: var(--teal); }
+  .badge-grants { background: var(--brown-soft); color: var(--brown); }
+  .badge-done { background: var(--green-soft); color: var(--green); }
+  .badge-pending { background: #FFF8E1; color: #F57F17; }
+  .badge-admin { background: var(--blue-soft); color: var(--blue); }
+  .badge-staff { background: var(--grey-soft); color: var(--grey); }
+
+  /* Buttons */
+  .btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 600;
+    border: none; cursor: pointer; transition: all .15s; text-decoration: none;
+  }
+  .btn-primary { background: var(--blue); color: white; }
+  .btn-primary:hover { background: var(--blue-light); }
+  .btn-danger { background: var(--red); color: white; }
+  .btn-danger:hover { opacity: .85; }
+  .btn-ghost { background: transparent; color: var(--text-muted); border: 1px solid var(--border); }
+  .btn-ghost:hover { background: var(--bg); }
+  .btn-icon { padding: 6px; border-radius: 6px; background: none; border: none; cursor: pointer; color: var(--text-muted); transition: all .15s; }
+  .btn-icon:hover { background: var(--bg); color: var(--text); }
+  .btn-icon.danger:hover { background: var(--red-soft); color: var(--red); }
+  .btn-sm { padding: 5px 10px; font-size: 12px; }
+
+  /* Forms */
+  .form-group { margin-bottom: 16px; }
+  .form-label { display: block; font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: .4px; }
+  .form-input {
+    width: 100%; padding: 9px 12px; border: 1.5px solid var(--border);
+    border-radius: 8px; font-size: 14px; outline: none;
+    transition: border-color .15s; background: white; color: var(--text);
+  }
+  .form-input:focus { border-color: var(--blue); }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .form-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+  select.form-input { cursor: pointer; }
+
+  /* Modal */
+  .modal-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,.45);
+    display: flex; align-items: flex-start; justify-content: center;
+    z-index: 200; padding: 20px; overflow-y: auto;
+  }
+  .modal {
+    background: white; border-radius: 16px; width: 100%; max-width: 680px;
+    box-shadow: 0 20px 60px rgba(0,0,0,.2); margin: auto;
+  }
+  .modal-header {
+    padding: 20px 24px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 12px;
+  }
+  .modal-header h3 { font-size: 16px; font-weight: 700; flex: 1; }
+  .modal-body { padding: 24px; max-height: 70vh; overflow-y: auto; }
+  .modal-footer { padding: 16px 24px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 8px; }
+
+  /* Alert */
+  .alert { padding: 10px 14px; border-radius: 8px; font-size: 13px; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+  .alert-error { background: var(--red-soft); color: var(--red); border: 1px solid #FFCDD2; }
+  .alert-success { background: var(--green-soft); color: var(--green); border: 1px solid #C8E6C9; }
+
+  /* Login page */
+  #login-page {
+    min-height: 100vh; display: flex; align-items: stretch;
+  }
+  .login-left {
+    flex: 1; background: linear-gradient(135deg, #0D47A1 0%, #1565C0 50%, #1976D2 100%);
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
+    padding: 60px 40px; color: white; min-height: 200px;
+  }
+  .login-left h1 { font-size: 28px; font-weight: 700; margin-top: 16px; }
+  .login-left p { font-size: 14px; opacity: .7; margin-top: 6px; }
+  .login-right {
+    flex: 1.2; display: flex; align-items: center; justify-content: center;
+    padding: 40px; background: white;
+  }
+  .login-form { width: 100%; max-width: 380px; }
+  .login-form h2 { font-size: 24px; font-weight: 700; margin-bottom: 6px; }
+  .login-form p { color: var(--text-muted); margin-bottom: 28px; font-size: 13px; }
+
+  /* Filters */
+  .filters { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .filter-chip {
+    padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 600;
+    border: 1.5px solid var(--border); background: white; cursor: pointer;
+    transition: all .15s; color: var(--text-muted);
+  }
+  .filter-chip.active { border-color: var(--blue); background: var(--blue-soft); color: var(--blue); }
+
+  /* Toggle */
+  .toggle {
+    position: relative; display: inline-block; width: 40px; height: 22px;
+  }
+  .toggle input { opacity: 0; width: 0; height: 0; }
+  .toggle-slider {
+    position: absolute; cursor: pointer; inset: 0;
+    background: #CBD5E1; border-radius: 22px; transition: .2s;
+  }
+  .toggle-slider:before {
+    content: ''; position: absolute; height: 16px; width: 16px;
+    left: 3px; bottom: 3px; background: white; border-radius: 50%; transition: .2s;
+  }
+  .toggle input:checked + .toggle-slider { background: var(--blue); }
+  .toggle input:checked + .toggle-slider:before { transform: translateX(18px); }
+
+  /* Empty state */
+  .empty { text-align: center; padding: 60px 20px; color: var(--text-muted); }
+  .empty svg { opacity: .25; margin-bottom: 12px; }
+  .empty p { font-size: 14px; }
+
+  /* Loading */
+  .spinner {
+    width: 20px; height: 20px; border: 2.5px solid rgba(255,255,255,.3);
+    border-top-color: white; border-radius: 50%; animation: spin .6s linear infinite;
+    display: inline-block;
+  }
+  .spinner-dark {
+    border-color: rgba(0,0,0,.1); border-top-color: var(--blue);
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Confirm dialog */
+  .confirm-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,.5);
+    display: flex; align-items: center; justify-content: center; z-index: 300; padding: 16px;
+  }
+  .confirm-box {
+    background: white; border-radius: 12px; padding: 24px; max-width: 380px; width: 100%;
+    box-shadow: 0 20px 60px rgba(0,0,0,.25);
+  }
+  .confirm-box h4 { font-size: 15px; font-weight: 700; margin-bottom: 8px; }
+  .confirm-box p { font-size: 13px; color: var(--text-muted); margin-bottom: 20px; line-height: 1.5; }
+  .confirm-actions { display: flex; justify-content: flex-end; gap: 8px; }
+
+  /* Section divider */
+  .section-title {
+    font-size: 11px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: .6px; color: var(--text-muted); margin-bottom: 12px; margin-top: 4px;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    #sidebar { transform: translateX(-100%); }
+    #sidebar.open { transform: translateX(0); }
+    #main { margin-left: 0; }
+    .tb-menu { display: flex; }
+    .tb-search { display: none; }
+    .form-row, .form-row-3 { grid-template-columns: 1fr; }
+    .login-left { display: none; }
+    .stats-row { grid-template-columns: 1fr 1fr; }
+    #content { padding: 16px; }
+    .modal-overlay { padding: 10px; }
+    .modal-body { max-height: 60vh; }
+  }
+  @media (max-width: 480px) {
+    .stats-row { grid-template-columns: 1fr; }
+  }
+
+  .overlay-bg {
+    position: fixed; inset: 0; background: rgba(0,0,0,.3); z-index: 99; display: none;
+  }
+  .overlay-bg.show { display: block; }
+  .page { display: none; }
+  .page.active { display: block; }
+</style>
+</head>
+<body>
+
+<!-- Sidebar overlay for mobile -->
+<div class="overlay-bg" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+<!-- LOGIN PAGE -->
+<div id="login-page">
+  <div class="login-left">
+    <svg width="56" height="56" viewBox="0 0 24 24" fill="none">
+      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z" fill="white" opacity=".9"/>
+    </svg>
+    <h1>Assistance Manager</h1>
+    <p>City Hall — Calamba City, Laguna</p>
+  </div>
+  <div class="login-right">
+    <div class="login-form">
+      <h2>Welcome back</h2>
+      <p>Sign in to your account to continue</p>
+      <div id="login-error" class="alert alert-error" style="display:none"></div>
+      <div class="form-group">
+        <label class="form-label">Username</label>
+        <input class="form-input" type="text" id="login-username" placeholder="Enter username" autocomplete="username">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input class="form-input" type="password" id="login-password" placeholder="Enter password" autocomplete="current-password">
+      </div>
+      <button class="btn btn-primary" style="width:100%;justify-content:center;padding:12px;font-size:14px;margin-top:8px" onclick="handleLogin()" id="login-btn">
+        Sign In
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="app" style="display:none">
+  <!-- Sidebar -->
+  <div id="sidebar">
+    <div class="sb-brand">
+      <h1>Assistance Manager</h1>
+      <p>Calamba City Hall</p>
+    </div>
+    <nav class="sb-nav">
+      <button class="sb-item active" onclick="showPage('dashboard')" id="nav-dashboard">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>
+        Dashboard
+      </button>
+      <button class="sb-item" onclick="showPage('requests')" id="nav-requests">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.89 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11zM8 15.01l1.41 1.41L11 14.84V19h2v-4.16l1.59 1.59L16 15.01 12.01 11 8 15.01z"/></svg>
+        Requests
+      </button>
+      <button class="sb-item" onclick="showPage('users')" id="nav-users" style="display:none">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+        User Management
+      </button>
+      <button class="sb-item" onclick="showPage('account')" id="nav-account">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+        My Account
+      </button>
+    </nav>
+    <div class="sb-user">
+      <div class="sb-user-name" id="sb-fullname">Loading...</div>
+      <div class="sb-user-role" id="sb-role"></div>
+      <button class="sb-logout" onclick="handleLogout()">Sign Out</button>
+    </div>
+  </div>
+
+  <!-- Main content -->
+  <div id="main">
+    <div id="topbar">
+      <button class="tb-menu btn-icon" onclick="toggleSidebar()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+      </button>
+      <div class="tb-title" id="page-title">Dashboard</div>
+      <div class="tb-search">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+        <input type="text" id="global-search" placeholder="Search requests..." oninput="handleSearch(this.value)">
+      </div>
+    </div>
+
+    <div id="content">
+      <!-- DASHBOARD PAGE -->
+      <div class="page active" id="page-dashboard">
+        <div class="stats-row" id="stats-row"></div>
+        <div class="card">
+          <div class="card-header">
+            <h2>Recent Requests</h2>
+            <button class="btn btn-ghost btn-sm" onclick="showPage('requests')">View All</button>
+          </div>
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr><th>Name</th><th>Type</th><th>Status</th><th>Date</th></tr></thead>
+              <tbody id="recent-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- REQUESTS PAGE -->
+      <div class="page" id="page-requests">
+        <div class="card">
+          <div class="card-header">
+            <h2>Assistance Requests</h2>
+            <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+              <button class="btn btn-ghost btn-sm" onclick="refreshData()">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
+                Refresh
+              </button>
+              <button class="btn btn-primary btn-sm" onclick="openAddModal()">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+                New Request
+              </button>
+            </div>
+          </div>
+          <div style="padding:14px 20px;border-bottom:1px solid var(--border);display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+            <div class="filters" id="type-filters"></div>
+          </div>
+          <div style="padding:10px 20px;border-bottom:1px solid var(--border);display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+            <label style="font-size:12px;font-weight:600;color:var(--text-muted)">STATUS:</label>
+            <button class="filter-chip active" id="filter-all" onclick="setStatusFilter('all')">All</button>
+            <button class="filter-chip" id="filter-pending" onclick="setStatusFilter('pending')">Pending</button>
+            <button class="filter-chip" id="filter-done" onclick="setStatusFilter('done')">Completed</button>
+          </div>
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr><th>Name</th><th>Address</th><th>Contact</th><th>Type</th><th>Amount</th><th>Status</th><th>Date</th><th style="width:100px">Actions</th></tr></thead>
+              <tbody id="requests-tbody"></tbody>
+            </table>
+          </div>
+          <div id="requests-empty" class="empty" style="display:none">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.89 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+            <p>No requests found</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- USERS PAGE -->
+      <div class="page" id="page-users">
+        <div class="card">
+          <div class="card-header">
+            <h2>User Management</h2>
+            <button class="btn btn-primary btn-sm" onclick="openAddUserModal()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+              Add User
+            </button>
+          </div>
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr><th>Name</th><th>Username</th><th>Role</th><th>Last Login</th><th>Actions</th></tr></thead>
+              <tbody id="users-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ACCOUNT PAGE -->
+      <div class="page" id="page-account">
+        <div class="card" style="max-width:520px">
+          <div class="card-header"><h2>My Account</h2></div>
+          <div class="card-body">
+            <div id="account-alert" style="display:none"></div>
+            <div class="section-title">Profile</div>
+            <div class="form-group">
+              <label class="form-label">Full Name</label>
+              <input class="form-input" type="text" id="acc-fullname">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Username</label>
+              <input class="form-input" type="text" id="acc-username">
+            </div>
+            <div class="section-title" style="margin-top:20px">Change Password <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:11px">(leave blank to keep current)</span></div>
+            <div class="form-group">
+              <label class="form-label">Current Password</label>
+              <input class="form-input" type="password" id="acc-current-pw" placeholder="Enter current password">
+            </div>
+            <div class="form-group">
+              <label class="form-label">New Password</label>
+              <input class="form-input" type="password" id="acc-new-pw" placeholder="Enter new password">
+            </div>
+            <button class="btn btn-primary" onclick="saveAccount()" id="acc-save-btn">Save Changes</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ADD/EDIT REQUEST MODAL -->
+<div class="modal-overlay" id="request-modal" style="display:none" onclick="closeModalOnBg(event,'request-modal')">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="modal-title">New Assistance Request</h3>
+      <button class="btn-icon" onclick="closeModal('request-modal')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div id="modal-error" class="alert alert-error" style="display:none"></div>
+      <div class="form-group">
+        <label class="form-label">Assistance Type</label>
+        <select class="form-input" id="m-type" onchange="handleTypeChange()">
+          <option>Medical Assistance</option>
+          <option>Educational Assistance</option>
+          <option>Hospitalization Assistance</option>
+          <option>Burial Assistance</option>
+          <option>Solicitation</option>
+          <option>Invitation</option>
+          <option>Grants</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">First Name</label>
+          <input class="form-input" id="m-firstname" placeholder="First name">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Last Name</label>
+          <input class="form-input" id="m-lastname" placeholder="Last name">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Contact Number</label>
+          <input class="form-input" id="m-contact" placeholder="09XXXXXXXXX">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Amount</label>
+          <input class="form-input" id="m-amount" type="number" placeholder="0.00">
+        </div>
+      </div>
+      <div class="section-title">Address</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Block / Lot</label>
+          <input class="form-input" id="m-blocklot" placeholder="Block/Lot No.">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Subdivision / Street</label>
+          <input class="form-input" id="m-subdivision" placeholder="Subdivision or Street">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Barangay</label>
+          <select class="form-input" id="m-barangay">
+            <option value="">Select Barangay</option>
+            <option>Bagong Kalsada</option><option>Uno</option><option>Dos</option><option>Tres</option><option>Quatro</option><option>Singko</option><option>Sais</option><option>Syete</option><option>Bañadero</option><option>Banlic</option><option>Barandal</option><option>Batino</option><option>Bubuyan</option><option>Bucal</option><option>Bunggo</option><option>Burol</option><option>Camaligan</option><option>Canlubang</option><option>Halang</option><option>Hornalan</option><option>Kay-Anlog</option><option>La Mesa</option><option>Laguerta</option><option>Lawa</option><option>Lecheria</option><option>Lingga</option><option>Looc</option><option>Mabato</option><option>Majada Labas</option><option>Makiling</option><option>Mapagong</option><option>Masili</option><option>Maunong</option><option>Mayapa</option><option>Milagrosa</option><option>Paciano Rizal</option><option>Palingon</option><option>Palo-Alto</option><option>Pansol</option><option>Parian</option><option>Prinza</option><option>Punta</option><option>Puting Lupa</option><option>Real</option><option>Saimsim</option><option>Sampiruhan</option><option>San Cristobal</option><option>San Jose</option><option>San Juan</option><option>Sirang Lupa</option><option>Sucol</option><option>Turbina</option><option>Ulango</option><option>Uwisan</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">City</label>
+          <input class="form-input" id="m-city" value="Calamba City">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Province</label>
+        <input class="form-input" id="m-province" value="Laguna">
+      </div>
+      <!-- Invitation fields -->
+      <div id="invitation-fields" style="display:none">
+        <div class="section-title">Invitation Details</div>
+        <div class="form-group">
+          <label class="form-label">Organization Name</label>
+          <input class="form-input" id="m-orgname" placeholder="Name of organization">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Date of Event</label>
+            <input class="form-input" id="m-eventdate" type="date">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Venue</label>
+            <input class="form-input" id="m-venue" placeholder="Event venue">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Request / Purpose</label>
+          <textarea class="form-input" id="m-request" rows="3" placeholder="Describe the request..."></textarea>
+        </div>
+      </div>
+      <!-- Grants fields -->
+      <div id="grants-fields" style="display:none">
+        <div class="section-title">Grants Details</div>
+        <div class="form-group">
+          <label class="form-label">Grants Information</label>
+          <textarea class="form-input" id="m-grants" rows="3" placeholder="Grants details..."></textarea>
+        </div>
+      </div>
+      <div class="form-group" style="margin-top:12px">
+        <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:13px;font-weight:500">
+          <label class="toggle">
+            <input type="checkbox" id="m-completed">
+            <span class="toggle-slider"></span>
+          </label>
+          Mark as Completed
+        </label>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('request-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveRequest()" id="save-btn">Save Request</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD/EDIT USER MODAL -->
+<div class="modal-overlay" id="user-modal" style="display:none" onclick="closeModalOnBg(event,'user-modal')">
+  <div class="modal" style="max-width:440px">
+    <div class="modal-header">
+      <h3 id="user-modal-title">Add User</h3>
+      <button class="btn-icon" onclick="closeModal('user-modal')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div id="user-modal-error" class="alert alert-error" style="display:none"></div>
+      <div class="form-group">
+        <label class="form-label">Full Name</label>
+        <input class="form-input" id="u-fullname" placeholder="First Middle Last">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Username</label>
+        <input class="form-input" id="u-username" placeholder="username">
+      </div>
+      <div class="form-group" id="u-password-group">
+        <label class="form-label">Password</label>
+        <input class="form-input" id="u-password" type="password" placeholder="Minimum 8 characters">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Role</label>
+        <select class="form-input" id="u-role">
+          <option value="Staff">Staff</option>
+          <option value="Admin">Admin</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('user-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveUser()" id="user-save-btn">Save User</button>
+    </div>
+  </div>
+</div>
+
+<!-- CONFIRM DIALOG -->
+<div class="confirm-overlay" id="confirm-dialog" style="display:none">
+  <div class="confirm-box">
+    <h4 id="confirm-title">Confirm Action</h4>
+    <p id="confirm-msg">Are you sure?</p>
+    <div class="confirm-actions">
+      <button class="btn btn-ghost btn-sm" onclick="confirmResolve(false)">Cancel</button>
+      <button class="btn btn-danger btn-sm" id="confirm-ok" onclick="confirmResolve(true)">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const BASE_URL = 'https://assistance-manager.onrender.com';
+
+// ─── STATE ────────────────────────────────────────────────────────────────
+let state = {
+  user: null,
+  requests: [],
+  users: [],
+  editingId: null,
+  editingUserId: null,
+  searchQuery: '',
+  typeFilter: 'all',
+  statusFilter: 'all',
+};
+
+// ─── AUTH ─────────────────────────────────────────────────────────────────
+function getSession() {
+  try { return JSON.parse(localStorage.getItem('am_session') || 'null'); } catch { return null; }
+}
+function setSession(data) { localStorage.setItem('am_session', JSON.stringify(data)); }
+function clearSession() { localStorage.removeItem('am_session'); }
+
+async function handleLogin() {
+  const username = document.getElementById('login-username').value.trim();
+  const password = document.getElementById('login-password').value;
+  const errEl = document.getElementById('login-error');
+  const btn = document.getElementById('login-btn');
+
+  if (!username || !password) { showEl(errEl, 'Please enter username and password.'); return; }
+
+  btn.innerHTML = '<span class="spinner"></span>';
+  btn.disabled = true;
+  errEl.style.display = 'none';
+
+  try {
+    const res = await fetch(`${BASE_URL}/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password })
+    });
+    const data = await res.json();
+    if (data.success) {
+      setSession(data.user);
+      initApp(data.user);
+    } else {
+      showEl(errEl, data.message || 'Login failed');
+    }
+  } catch (e) {
+    showEl(errEl, 'Could not connect to server. Please try again.');
+  } finally {
+    btn.innerHTML = 'Sign In';
+    btn.disabled = false;
+  }
+}
+
+function handleLogout() {
+  clearSession();
+  location.reload();
+}
+
+// ─── INIT ─────────────────────────────────────────────────────────────────
+window.onload = () => {
+  const session = getSession();
+  if (session) { initApp(session); }
+
+  document.getElementById('login-password').addEventListener('keydown', e => {
+    if (e.key === 'Enter') handleLogin();
+  });
+};
+
+function initApp(user) {
+  state.user = user;
+  document.getElementById('login-page').style.display = 'none';
+  document.getElementById('app').style.display = 'flex';
+  document.getElementById('sb-fullname').textContent = user.full_name || user.username;
+  document.getElementById('sb-role').textContent = user.role;
+  document.getElementById('acc-fullname').value = user.full_name || '';
+  document.getElementById('acc-username').value = user.username || '';
+
+  if (user.role === 'Admin') {
+    document.getElementById('nav-users').style.display = 'flex';
+  }
+
+  loadTypeFilters();
+  refreshData();
+  showPage('dashboard');
+}
+
+// ─── PAGES ────────────────────────────────────────────────────────────────
+function showPage(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.sb-item').forEach(i => i.classList.remove('active'));
+  document.getElementById(`page-${page}`).classList.add('active');
+  document.getElementById(`nav-${page}`)?.classList.add('active');
+  const titles = { dashboard: 'Dashboard', requests: 'Assistance Requests', users: 'User Management', account: 'My Account' };
+  document.getElementById('page-title').textContent = titles[page] || '';
+  closeSidebar();
+
+  if (page === 'users') loadUsers();
+  if (page === 'dashboard') renderDashboard();
+}
+
+// ─── DATA ─────────────────────────────────────────────────────────────────
+async function refreshData() {
+  try {
+    const res = await fetch(`${BASE_URL}/get-assistances`);
+    const data = await res.json();
+    state.requests = data;
+    renderRequests();
+    renderDashboard();
+  } catch (e) { console.error('Failed to load requests', e); }
+}
+
+async function loadUsers() {
+  try {
+    const res = await fetch(`${BASE_URL}/get-users`);
+    const data = await res.json();
+    state.users = data;
+    renderUsers();
+  } catch (e) { console.error('Failed to load users', e); }
+}
+
+// ─── RENDER ───────────────────────────────────────────────────────────────
+const TYPE_COLORS = {
+  'Medical Assistance': 'medical', 'Educational Assistance': 'educational',
+  'Hospitalization Assistance': 'hospitalization', 'Burial Assistance': 'burial',
+  'Solicitation': 'solicitation', 'Invitation': 'invitation', 'Grants': 'grants'
+};
+
+function typeBadge(type) {
+  const cls = TYPE_COLORS[type] || 'medical';
+  return `<span class="badge badge-${cls}">${type}</span>`;
+}
+
+function statusBadge(done) {
+  return done
+    ? `<span class="badge badge-done">Completed</span>`
+    : `<span class="badge badge-pending">Pending</span>`;
+}
+
+function fmtDate(d) {
+  if (!d) return '—';
+  return new Date(d).toLocaleDateString('en-PH', { year: 'numeric', month: 'short', day: 'numeric' });
+}
+
+function fmtAmount(a) {
+  if (!a) return '—';
+  return '₱' + parseFloat(a).toLocaleString('en-PH', { minimumFractionDigits: 2 });
+}
+
+function getFilteredRequests() {
+  return state.requests.filter(r => {
+    const name = `${r.first_name} ${r.last_name}`.toLowerCase();
+    const q = state.searchQuery.toLowerCase();
+    const matchSearch = !q || name.includes(q) || (r.address||'').toLowerCase().includes(q) || (r.assistanceType||'').toLowerCase().includes(q);
+    const matchType = state.typeFilter === 'all' || r.assistanceType === state.typeFilter;
+    const matchStatus = state.statusFilter === 'all' || (state.statusFilter === 'done' ? r.isCompleted : !r.isCompleted);
+    return matchSearch && matchType && matchStatus;
+  });
+}
+
+function renderRequests() {
+  const filtered = getFilteredRequests();
+  const tbody = document.getElementById('requests-tbody');
+  const empty = document.getElementById('requests-empty');
+
+  if (!filtered.length) {
+    tbody.innerHTML = '';
+    empty.style.display = 'block';
+    return;
+  }
+  empty.style.display = 'none';
+
+  tbody.innerHTML = filtered.map(r => `
+    <tr>
+      <td><strong>${r.last_name}, ${r.first_name}</strong></td>
+      <td style="max-width:180px;font-size:12px;color:var(--text-muted)">${r.address || '—'}</td>
+      <td style="font-family:'DM Mono',monospace;font-size:12px">${r.contactNumber || '—'}</td>
+      <td>${typeBadge(r.assistanceType)}</td>
+      <td style="font-family:'DM Mono',monospace;font-size:12px">${fmtAmount(r.amount)}</td>
+      <td>${statusBadge(r.isCompleted)}</td>
+      <td style="font-size:12px;color:var(--text-muted)">${fmtDate(r.createdAt)}</td>
+      <td>
+        <div style="display:flex;gap:4px">
+          <button class="btn-icon" onclick="openEditModal('${r.id}')" title="Edit">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+          </button>
+          <button class="btn-icon danger" onclick="deleteRequest('${r.id}')" title="Delete">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+          </button>
+        </div>
+      </td>
+    </tr>
+  `).join('');
+}
+
+function renderDashboard() {
+  const reqs = state.requests;
+  const total = reqs.length;
+  const completed = reqs.filter(r => r.isCompleted).length;
+  const pending = total - completed;
+  const types = [...new Set(reqs.map(r => r.assistanceType))];
+
+  document.getElementById('stats-row').innerHTML = `
+    <div class="stat-card"><div class="stat-label">Total Requests</div><div class="stat-value" style="color:var(--blue)">${total}</div><div class="stat-sub">All time</div></div>
+    <div class="stat-card"><div class="stat-label">Completed</div><div class="stat-value" style="color:var(--green)">${completed}</div><div class="stat-sub">${total ? Math.round(completed/total*100) : 0}% completion rate</div></div>
+    <div class="stat-card"><div class="stat-label">Pending</div><div class="stat-value" style="color:#F57F17">${pending}</div><div class="stat-sub">Awaiting completion</div></div>
+    <div class="stat-card"><div class="stat-label">Types Active</div><div class="stat-value" style="color:var(--purple)">${types.length}</div><div class="stat-sub">Assistance categories</div></div>
+  `;
+
+  const recent = [...reqs].slice(0, 10);
+  document.getElementById('recent-tbody').innerHTML = recent.map(r => `
+    <tr>
+      <td><strong>${r.last_name}, ${r.first_name}</strong></td>
+      <td>${typeBadge(r.assistanceType)}</td>
+      <td>${statusBadge(r.isCompleted)}</td>
+      <td style="font-size:12px;color:var(--text-muted)">${fmtDate(r.createdAt)}</td>
+    </tr>
+  `).join('') || '<tr><td colspan="4" style="text-align:center;color:var(--text-muted);padding:32px">No records yet</td></tr>';
+}
+
+function renderUsers() {
+  const tbody = document.getElementById('users-tbody');
+  tbody.innerHTML = state.users.map(u => `
+    <tr>
+      <td><strong>${u.full_name || '—'}</strong></td>
+      <td style="font-family:'DM Mono',monospace;font-size:12px">@${u.username}</td>
+      <td><span class="badge badge-${u.role?.toLowerCase()}">${u.role}</span></td>
+      <td style="font-size:12px;color:var(--text-muted)">${u.last_login ? fmtDate(u.last_login) : 'Never'}</td>
+      <td>
+        <div style="display:flex;gap:4px">
+          <button class="btn-icon" onclick="openEditUserModal(${u.id})" title="Edit">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+          </button>
+          ${u.id !== state.user?.user_id ? `<button class="btn-icon danger" onclick="deleteUser(${u.id},'${u.full_name}')" title="Delete">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+          </button>` : ''}
+        </div>
+      </td>
+    </tr>
+  `).join('') || '<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:32px">No users found</td></tr>';
+}
+
+// ─── FILTERS ──────────────────────────────────────────────────────────────
+function loadTypeFilters() {
+  const types = ['all', 'Medical Assistance', 'Educational Assistance', 'Hospitalization Assistance', 'Burial Assistance', 'Solicitation', 'Invitation', 'Grants'];
+  document.getElementById('type-filters').innerHTML = types.map(t => `
+    <button class="filter-chip ${t==='all'?'active':''}" id="type-${t.replace(/ /g,'-')}" onclick="setTypeFilter('${t}')">${t==='all'?'All Types':t}</button>
+  `).join('');
+}
+
+function setTypeFilter(type) {
+  state.typeFilter = type;
+  document.querySelectorAll('#type-filters .filter-chip').forEach(c => c.classList.remove('active'));
+  document.getElementById(`type-${type.replace(/ /g,'-')}`)?.classList.add('active');
+  renderRequests();
+}
+
+function setStatusFilter(s) {
+  state.statusFilter = s;
+  ['all','pending','done'].forEach(f => document.getElementById(`filter-${f}`)?.classList.toggle('active', f===s));
+  renderRequests();
+}
+
+function handleSearch(q) {
+  state.searchQuery = q;
+  renderRequests();
+}
+
+// ─── REQUEST MODAL ────────────────────────────────────────────────────────
+function openAddModal() {
+  state.editingId = null;
+  document.getElementById('modal-title').textContent = 'New Assistance Request';
+  document.getElementById('save-btn').textContent = 'Save Request';
+  clearRequestForm();
+  document.getElementById('request-modal').style.display = 'flex';
+}
+
+function openEditModal(id) {
+  const r = state.requests.find(x => x.id === id);
+  if (!r) return;
+  state.editingId = id;
+  document.getElementById('modal-title').textContent = 'Edit Request';
+  document.getElementById('save-btn').textContent = 'Update Request';
+  document.getElementById('m-type').value = r.assistanceType || 'Medical Assistance';
+  document.getElementById('m-firstname').value = r.first_name || '';
+  document.getElementById('m-lastname').value = r.last_name || '';
+  document.getElementById('m-contact').value = r.contactNumber || '';
+  document.getElementById('m-amount').value = r.amount || '';
+  const addrParts = (r.address || '').split(', ');
+  document.getElementById('m-blocklot').value = addrParts[0] || '';
+  document.getElementById('m-subdivision').value = addrParts[1] || '';
+  document.getElementById('m-barangay').value = addrParts[2] || '';
+  document.getElementById('m-city').value = addrParts[3] || 'Calamba City';
+  document.getElementById('m-province').value = addrParts[4] || 'Laguna';
+  document.getElementById('m-completed').checked = r.isCompleted || false;
+  document.getElementById('m-orgname').value = r.nameOfOrganization || '';
+  document.getElementById('m-eventdate').value = r.dateOfEvent ? r.dateOfEvent.split('T')[0] : '';
+  document.getElementById('m-venue').value = r.venueOfEvent || '';
+  document.getElementById('m-request').value = r.request || '';
+  document.getElementById('m-grants').value = r.grants || '';
+  handleTypeChange();
+  document.getElementById('request-modal').style.display = 'flex';
+}
+
+function clearRequestForm() {
+  ['m-firstname','m-lastname','m-contact','m-amount','m-blocklot','m-subdivision','m-city','m-province','m-orgname','m-eventdate','m-venue','m-request','m-grants'].forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
+  document.getElementById('m-city').value = 'Calamba City';
+  document.getElementById('m-province').value = 'Laguna';
+  document.getElementById('m-barangay').value = '';
+  document.getElementById('m-type').value = 'Medical Assistance';
+  document.getElementById('m-completed').checked = false;
+  document.getElementById('modal-error').style.display = 'none';
+  handleTypeChange();
+}
+
+function handleTypeChange() {
+  const type = document.getElementById('m-type').value;
+  document.getElementById('invitation-fields').style.display = type === 'Invitation' ? 'block' : 'none';
+  document.getElementById('grants-fields').style.display = type === 'Grants' ? 'block' : 'none';
+}
+
+async function saveRequest() {
+  const firstName = document.getElementById('m-firstname').value.trim();
+  const lastName = document.getElementById('m-lastname').value.trim();
+  const contact = document.getElementById('m-contact').value.trim();
+  const errEl = document.getElementById('modal-error');
+
+  if (!firstName || !lastName || !contact) {
+    showEl(errEl, 'Please fill in First Name, Last Name, and Contact Number.');
+    return;
+  }
+
+  const parts = [
+    document.getElementById('m-blocklot').value.trim(),
+    document.getElementById('m-subdivision').value.trim(),
+    document.getElementById('m-barangay').value.trim(),
+    document.getElementById('m-city').value.trim(),
+    document.getElementById('m-province').value.trim(),
+  ].filter(Boolean);
+
+  const body = {
+    first_name: toTitleCase(firstName),
+    last_name: toTitleCase(lastName),
+    blockLot: document.getElementById('m-blocklot').value.trim(),
+    subdivision: document.getElementById('m-subdivision').value.trim(),
+    barangay: document.getElementById('m-barangay').value.trim(),
+    city: document.getElementById('m-city').value.trim(),
+    province: document.getElementById('m-province').value.trim(),
+    address: parts.join(', '),
+    contactNumber: contact.replace(/\D/g, ''),
+    assistanceType: document.getElementById('m-type').value,
+    amount: document.getElementById('m-amount').value || null,
+    isCompleted: document.getElementById('m-completed').checked,
+    nameOfOrganization: document.getElementById('m-orgname').value.trim() || null,
+    dateOfEvent: document.getElementById('m-eventdate').value || null,
+    venueOfEvent: document.getElementById('m-venue').value.trim() || null,
+    request: document.getElementById('m-request').value.trim() || null,
+    grants: document.getElementById('m-grants').value.trim() || null,
+  };
+
+  const btn = document.getElementById('save-btn');
+  btn.innerHTML = '<span class="spinner"></span>';
+  btn.disabled = true;
+  errEl.style.display = 'none';
+
+  try {
+    let res;
+    if (state.editingId) {
+      res = await fetch(`${BASE_URL}/update-assistance/${state.editingId}`, {
+        method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body)
+      });
+    } else {
+      res = await fetch(`${BASE_URL}/create-assistance`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body)
+      });
+    }
+    const data = await res.json();
+    if (data.success || res.ok) {
+      closeModal('request-modal');
+      await refreshData();
+    } else {
+      showEl(errEl, data.message || 'Failed to save request');
+    }
+  } catch (e) {
+    showEl(errEl, 'Network error. Please try again.');
+  } finally {
+    btn.innerHTML = state.editingId ? 'Update Request' : 'Save Request';
+    btn.disabled = false;
+  }
+}
+
+async function deleteRequest(id) {
+  const confirmed = await showConfirm('Delete Request', 'Are you sure you want to delete this request? This cannot be undone.', 'Delete');
+  if (!confirmed) return;
+  try {
+    await fetch(`${BASE_URL}/delete-assistance/${id}`, { method: 'DELETE' });
+    await refreshData();
+  } catch (e) { alert('Failed to delete request'); }
+}
+
+// ─── USER MODAL ───────────────────────────────────────────────────────────
+function openAddUserModal() {
+  state.editingUserId = null;
+  document.getElementById('user-modal-title').textContent = 'Add User';
+  document.getElementById('user-save-btn').textContent = 'Add User';
+  document.getElementById('u-fullname').value = '';
+  document.getElementById('u-username').value = '';
+  document.getElementById('u-password').value = '';
+  document.getElementById('u-role').value = 'Staff';
+  document.getElementById('u-password-group').style.display = 'block';
+  document.getElementById('user-modal-error').style.display = 'none';
+  document.getElementById('user-modal').style.display = 'flex';
+}
+
+function openEditUserModal(id) {
+  const u = state.users.find(x => x.id === id);
+  if (!u) return;
+  state.editingUserId = id;
+  document.getElementById('user-modal-title').textContent = 'Edit User';
+  document.getElementById('user-save-btn').textContent = 'Update User';
+  document.getElementById('u-fullname').value = u.full_name || '';
+  document.getElementById('u-username').value = u.username || '';
+  document.getElementById('u-password').value = '';
+  document.getElementById('u-role').value = u.role || 'Staff';
+  document.getElementById('u-password-group').style.display = 'none';
+  document.getElementById('user-modal-error').style.display = 'none';
+  document.getElementById('user-modal').style.display = 'flex';
+}
+
+async function saveUser() {
+  const fullName = document.getElementById('u-fullname').value.trim();
+  const username = document.getElementById('u-username').value.trim();
+  const password = document.getElementById('u-password').value;
+  const role = document.getElementById('u-role').value;
+  const errEl = document.getElementById('user-modal-error');
+
+  if (!fullName || !username) { showEl(errEl, 'Full name and username are required.'); return; }
+
+  const btn = document.getElementById('user-save-btn');
+  btn.innerHTML = '<span class="spinner"></span>';
+  btn.disabled = true;
+  errEl.style.display = 'none';
+
+  try {
+    let res;
+    if (state.editingUserId) {
+      res = await fetch(`${BASE_URL}/admin-update-user/${state.editingUserId}`, {
+        method: 'PUT', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ full_name: fullName, username, role })
+      });
+    } else {
+      const nameParts = fullName.split(' ');
+      const first_name = nameParts[0];
+      const last_name = nameParts.length > 1 ? nameParts[nameParts.length - 1] : nameParts[0];
+      const middle_name = nameParts.length > 2 ? nameParts.slice(1, -1).join(' ') : '';
+      res = await fetch(`${BASE_URL}/register`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ first_name, middle_name, last_name, username, password, role })
+      });
+    }
+    const data = await res.json();
+    if (data.success) {
+      closeModal('user-modal');
+      loadUsers();
+    } else {
+      showEl(errEl, data.message || 'Failed to save user');
+    }
+  } catch (e) {
+    showEl(errEl, 'Network error. Please try again.');
+  } finally {
+    btn.innerHTML = state.editingUserId ? 'Update User' : 'Add User';
+    btn.disabled = false;
+  }
+}
+
+async function deleteUser(id, name) {
+  const confirmed = await showConfirm('Delete User', `Delete user "${name}"? This cannot be undone.`, 'Delete');
+  if (!confirmed) return;
+  try {
+    await fetch(`${BASE_URL}/delete-user/${id}`, { method: 'DELETE' });
+    loadUsers();
+  } catch (e) { alert('Failed to delete user'); }
+}
+
+// ─── ACCOUNT ──────────────────────────────────────────────────────────────
+async function saveAccount() {
+  const fullName = document.getElementById('acc-fullname').value.trim();
+  const username = document.getElementById('acc-username').value.trim();
+  const currentPw = document.getElementById('acc-current-pw').value;
+  const newPw = document.getElementById('acc-new-pw').value;
+  const alertEl = document.getElementById('account-alert');
+  const btn = document.getElementById('acc-save-btn');
+
+  const body = { full_name: fullName, username };
+  if (currentPw && newPw) { body.current_password = currentPw; body.new_password = newPw; }
+
+  btn.innerHTML = '<span class="spinner spinner-dark"></span>';
+  btn.disabled = true;
+
+  try {
+    const res = await fetch(`${BASE_URL}/update-account/${state.user.user_id}`, {
+      method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body)
+    });
+    const data = await res.json();
+    alertEl.style.display = 'flex';
+    if (data.success) {
+      alertEl.className = 'alert alert-success';
+      alertEl.textContent = 'Account updated successfully!';
+      state.user.full_name = fullName;
+      state.user.username = username;
+      setSession(state.user);
+      document.getElementById('sb-fullname').textContent = fullName;
+      document.getElementById('acc-current-pw').value = '';
+      document.getElementById('acc-new-pw').value = '';
+    } else {
+      alertEl.className = 'alert alert-error';
+      alertEl.textContent = data.message || 'Update failed';
+    }
+  } catch (e) {
+    alertEl.style.display = 'flex';
+    alertEl.className = 'alert alert-error';
+    alertEl.textContent = 'Network error. Please try again.';
+  } finally {
+    btn.innerHTML = 'Save Changes';
+    btn.disabled = false;
+  }
+}
+
+// ─── CONFIRM DIALOG ───────────────────────────────────────────────────────
+let confirmResolve = () => {};
+function showConfirm(title, msg, btnLabel = 'Confirm', danger = true) {
+  document.getElementById('confirm-title').textContent = title;
+  document.getElementById('confirm-msg').textContent = msg;
+  document.getElementById('confirm-ok').textContent = btnLabel;
+  document.getElementById('confirm-ok').className = `btn btn-sm ${danger ? 'btn-danger' : 'btn-primary'}`;
+  document.getElementById('confirm-dialog').style.display = 'flex';
+  return new Promise(resolve => {
+    confirmResolve = (val) => {
+      document.getElementById('confirm-dialog').style.display = 'none';
+      resolve(val);
+    };
+  });
+}
+
+// ─── UTILS ────────────────────────────────────────────────────────────────
+function toTitleCase(str) {
+  return str.trim().split(' ').map(w => w ? w[0].toUpperCase() + w.slice(1).toLowerCase() : '').join(' ');
+}
+
+function showEl(el, msg) { el.textContent = msg; el.style.display = 'flex'; }
+
+function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+function closeModalOnBg(e, id) { if (e.target === document.getElementById(id)) closeModal(id); }
+
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sidebarOverlay').classList.toggle('show');
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebarOverlay').classList.remove('show');
+}
+</script>
+</body>
+</html>
