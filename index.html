@@ -7,9 +7,9 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="theme-color" content="#1565C0">
 <title>Assistance Manager</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-:root {
+:root{
   --blue:#1565C0;--blue-light:#1976D2;--blue-soft:#E3F2FD;
   --red:#C62828;--red-soft:#FFEBEE;
   --green:#2E7D32;--green-soft:#E8F5E9;
@@ -19,80 +19,98 @@
   --brown:#4E342E;--brown-soft:#EFEBE9;
   --grey:#455A64;--grey-soft:#ECEFF1;
   --text:#1A2332;--text-muted:#64748B;
-  --border:#E2E8F0;--bg:#F8FAFC;--white:#FFFFFF;
-  --sidebar-w:260px;--topbar-h:56px;
+  --border:#E2E8F0;--bg:#F8FAFC;
+  --sidebar-w:255px;--topbar-h:56px;
   --radius:12px;--shadow:0 1px 3px rgba(0,0,0,.08),0 4px 16px rgba(0,0,0,.04);
   --safe-b:env(safe-area-inset-bottom,0px);
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-html{-webkit-text-size-adjust:100%;}
-body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);font-size:14px;overflow-x:hidden;}
+html{-webkit-text-size-adjust:100%;height:100%;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);font-size:14px;overflow-x:hidden;min-height:100vh;}
 button,input,select,textarea{font-family:inherit;}
+button{cursor:pointer;}
 
-/* LAYOUT */
-#app{display:flex;min-height:100vh;min-height:100dvh;}
-#sidebar{width:var(--sidebar-w);background:var(--blue);color:white;display:flex;flex-direction:column;flex-shrink:0;position:fixed;top:0;left:0;height:100vh;height:100dvh;z-index:200;transition:transform .25s cubic-bezier(.4,0,.2,1);overflow-y:auto;-webkit-overflow-scrolling:touch;}
+/* ── LAYOUT ── */
+#app{display:flex;min-height:100vh;}
+#sidebar{
+  width:var(--sidebar-w);background:var(--blue);color:white;
+  display:flex;flex-direction:column;flex-shrink:0;
+  position:fixed;top:0;left:0;height:100%;z-index:200;
+  transition:transform .25s ease;overflow-y:auto;
+}
 #main{margin-left:var(--sidebar-w);flex:1;display:flex;flex-direction:column;min-height:100vh;}
-#topbar{background:white;border-bottom:1px solid var(--border);padding:0 16px;height:var(--topbar-h);display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:100;}
-#content{padding:16px;flex:1;}
+#topbar{
+  background:white;border-bottom:1px solid var(--border);
+  padding:0 20px;height:var(--topbar-h);
+  display:flex;align-items:center;gap:12px;
+  position:sticky;top:0;z-index:100;
+}
+#content{padding:20px;flex:1;}
 
-/* SIDEBAR */
-.sb-brand{padding:20px 18px 14px;border-bottom:1px solid rgba(255,255,255,.15);flex-shrink:0;}
-.sb-brand h1{font-size:15px;font-weight:700;line-height:1.3;}
+/* ── SIDEBAR ── */
+.sb-brand{padding:18px 16px 14px;border-bottom:1px solid rgba(255,255,255,.15);}
+.sb-brand h1{font-size:14px;font-weight:700;line-height:1.4;}
 .sb-brand p{font-size:11px;opacity:.6;margin-top:2px;}
 .sb-nav{flex:1;padding:10px 8px;display:flex;flex-direction:column;gap:2px;}
-.sb-item{display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:8px;cursor:pointer;font-size:13.5px;font-weight:500;color:rgba(255,255,255,.75);border:none;background:none;width:100%;text-align:left;transition:background .15s,color .15s;-webkit-tap-highlight-color:transparent;min-height:44px;}
+.sb-item{
+  display:flex;align-items:center;gap:11px;padding:10px 12px;
+  border-radius:8px;font-size:13px;font-weight:500;
+  color:rgba(255,255,255,.72);border:none;background:none;
+  width:100%;text-align:left;transition:all .15s;
+  -webkit-tap-highlight-color:transparent;min-height:44px;
+}
 .sb-item:hover,.sb-item:active{background:rgba(255,255,255,.12);color:white;}
-.sb-item.active{background:rgba(255,255,255,.2);color:white;}
+.sb-item.active{background:rgba(255,255,255,.18);color:white;}
 .sb-item svg{width:18px;height:18px;flex-shrink:0;}
-.sb-user{padding:14px 18px;border-top:1px solid rgba(255,255,255,.15);padding-bottom:calc(14px + var(--safe-b));flex-shrink:0;}
+.sb-user{padding:14px 16px;border-top:1px solid rgba(255,255,255,.15);padding-bottom:calc(14px + var(--safe-b));}
 .sb-user-name{font-size:13px;font-weight:700;}
 .sb-user-role{font-size:11px;opacity:.6;margin-top:2px;}
-.sb-logout{margin-top:10px;width:100%;padding:9px;border-radius:8px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:white;font-size:13px;font-weight:600;cursor:pointer;transition:background .15s;min-height:44px;}
-.sb-logout:hover,.sb-logout:active{background:rgba(255,255,255,.22);}
+.sb-logout{margin-top:10px;width:100%;padding:9px;border-radius:8px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);color:white;font-size:13px;font-weight:600;transition:background .15s;min-height:44px;}
+.sb-logout:hover{background:rgba(255,255,255,.2);}
 
-/* SIDEBAR OVERLAY */
-#sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:190;-webkit-tap-highlight-color:transparent;}
-#sidebar-overlay.show{display:block;}
+/* Overlay */
+#sb-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:190;}
+#sb-overlay.show{display:block;}
 
-/* TOPBAR */
-.tb-menu{background:none;border:none;padding:8px;border-radius:8px;display:none;align-items:center;justify-content:center;color:var(--text);cursor:pointer;flex-shrink:0;-webkit-tap-highlight-color:transparent;min-width:40px;min-height:40px;}
-.tb-title{font-size:16px;font-weight:700;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.tb-search{display:flex;align-items:center;gap:8px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:7px 12px;width:220px;flex-shrink:0;}
+/* ── TOPBAR ── */
+#tb-menu{display:none;background:none;border:none;padding:6px;color:var(--text);min-width:40px;min-height:40px;border-radius:8px;align-items:center;justify-content:center;}
+.tb-title{font-size:16px;font-weight:700;flex:1;}
+.tb-search{display:flex;align-items:center;gap:8px;background:var(--bg);border:1.5px solid var(--border);border-radius:9px;padding:7px 13px;width:230px;}
 .tb-search input{border:none;background:none;outline:none;font-size:13px;width:100%;}
-.tb-search svg{opacity:.4;flex-shrink:0;width:15px;height:15px;}
+.tb-search svg{opacity:.35;flex-shrink:0;width:15px;height:15px;}
 
-/* CARDS */
-.card{background:white;border-radius:var(--radius);box-shadow:var(--shadow);border:1px solid var(--border);margin-bottom:16px;}
-.card-header{padding:14px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
-.card-header h2{font-size:15px;font-weight:700;flex:1;min-width:0;}
+/* ── STATS ROW (3 cards, inside requests page) ── */
+.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px;}
+.stat-card{background:white;border-radius:var(--radius);border:1px solid var(--border);padding:14px 16px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:3px;}
+.stat-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);}
+.stat-value{font-size:28px;font-weight:700;font-family:'DM Mono',monospace;line-height:1.1;}
+.stat-sub{font-size:11px;color:var(--text-muted);}
+
+/* ── CARD ── */
+.card{background:white;border-radius:var(--radius);box-shadow:var(--shadow);border:1px solid var(--border);margin-bottom:16px;overflow:hidden;}
+.card-header{padding:13px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.card-header h2{font-size:15px;font-weight:700;flex:1;}
 .card-body{padding:16px;}
 
-/* STATS */
-.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px;}
-.stat-card{background:white;border-radius:var(--radius);border:1px solid var(--border);padding:14px 16px;box-shadow:var(--shadow);}
-.stat-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);margin-bottom:4px;}
-.stat-value{font-size:26px;font-weight:700;font-family:'DM Mono',monospace;line-height:1;}
-.stat-sub{font-size:11px;color:var(--text-muted);margin-top:3px;}
-
-/* TABLE */
+/* ── TABLE ── */
 .tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;}
-table{width:100%;border-collapse:collapse;font-size:13px;min-width:580px;}
+table{width:100%;border-collapse:collapse;font-size:13px;min-width:560px;}
 th{text-align:left;padding:9px 14px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);border-bottom:2px solid var(--border);background:var(--bg);white-space:nowrap;}
 td{padding:11px 14px;border-bottom:1px solid var(--border);vertical-align:middle;}
 tr:last-child td{border-bottom:none;}
 tr:hover td{background:#FAFBFF;}
 
-/* MOBILE CARD LIST */
+/* ── MOBILE CARD LIST ── */
 .req-list{display:none;flex-direction:column;gap:10px;padding:12px;}
-.req-card{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:6px;}
-.req-card-name{font-weight:700;font-size:14px;}
-.req-card-meta{font-size:12px;color:var(--text-muted);display:flex;gap:6px;flex-wrap:wrap;align-items:center;}
-.req-card-actions{display:flex;gap:8px;margin-top:4px;}
-.req-card-actions .btn{flex:1;justify-content:center;font-size:12px;padding:8px 10px;}
+.req-card{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:13px 14px;display:flex;flex-direction:column;gap:7px;}
+.req-card-name{font-weight:700;font-size:15px;}
+.req-card-row{display:flex;gap:6px;flex-wrap:wrap;align-items:center;}
+.req-card-meta{font-size:12px;color:var(--text-muted);}
+.req-card-actions{display:flex;gap:8px;padding-top:4px;border-top:1px solid var(--border);}
+.req-card-actions .btn{flex:1;justify-content:center;font-size:13px;padding:9px;}
 
-/* BADGES */
-.badge{display:inline-flex;align-items:center;padding:3px 8px;border-radius:20px;font-size:11px;font-weight:600;white-space:nowrap;}
+/* ── BADGES ── */
+.badge{display:inline-flex;align-items:center;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600;white-space:nowrap;}
 .badge-medical{background:var(--red-soft);color:var(--red);}
 .badge-educational{background:var(--blue-soft);color:var(--blue);}
 .badge-hospitalization{background:var(--purple-soft);color:var(--purple);}
@@ -105,140 +123,179 @@ tr:hover td{background:#FAFBFF;}
 .badge-admin{background:var(--blue-soft);color:var(--blue);}
 .badge-staff{background:var(--grey-soft);color:var(--grey);}
 
-/* BUTTONS */
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:8px 14px;border-radius:8px;font-size:13px;font-weight:600;border:none;cursor:pointer;transition:all .15s;-webkit-tap-highlight-color:transparent;min-height:36px;white-space:nowrap;}
+/* ── BUTTONS ── */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:8px 14px;border-radius:8px;font-size:13px;font-weight:600;border:none;transition:all .15s;-webkit-tap-highlight-color:transparent;min-height:36px;white-space:nowrap;}
 .btn-primary{background:var(--blue);color:white;}
 .btn-primary:hover,.btn-primary:active{background:var(--blue-light);}
 .btn-danger{background:var(--red);color:white;}
-.btn-danger:hover,.btn-danger:active{opacity:.85;}
+.btn-danger:hover{opacity:.85;}
 .btn-ghost{background:transparent;color:var(--text-muted);border:1px solid var(--border);}
 .btn-ghost:hover,.btn-ghost:active{background:var(--bg);}
-.btn-icon{padding:7px;border-radius:7px;background:none;border:none;cursor:pointer;color:var(--text-muted);transition:all .15s;display:inline-flex;align-items:center;justify-content:center;min-width:34px;min-height:34px;-webkit-tap-highlight-color:transparent;}
-.btn-icon:hover,.btn-icon:active{background:var(--bg);color:var(--text);}
-.btn-icon.danger:hover,.btn-icon.danger:active{background:var(--red-soft);color:var(--red);}
-.btn-sm{padding:6px 10px;font-size:12px;min-height:32px;}
+.btn-red-ghost{background:transparent;color:var(--red);border:1px solid #FFCDD2;}
+.btn-red-ghost:hover{background:var(--red-soft);}
+.btn-icon{padding:7px;border-radius:7px;background:none;border:none;color:var(--text-muted);display:inline-flex;align-items:center;justify-content:center;min-width:34px;min-height:34px;-webkit-tap-highlight-color:transparent;transition:all .15s;}
+.btn-icon:hover{background:var(--bg);color:var(--text);}
+.btn-icon.danger:hover{background:var(--red-soft);color:var(--red);}
+.btn-sm{padding:6px 11px;font-size:12px;min-height:32px;}
 
-/* FORMS */
+/* ── FORMS ── */
 .form-group{margin-bottom:14px;}
 .form-label{display:block;font-size:11px;font-weight:700;color:var(--text-muted);margin-bottom:5px;text-transform:uppercase;letter-spacing:.4px;}
-.form-input{width:100%;padding:11px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:15px;outline:none;transition:border-color .15s;background:white;color:var(--text);-webkit-appearance:none;appearance:none;}
+.form-input{width:100%;padding:11px 13px;border:1.5px solid var(--border);border-radius:9px;font-size:15px;outline:none;transition:border-color .15s;background:white;color:var(--text);-webkit-appearance:none;appearance:none;}
 .form-input:focus{border-color:var(--blue);}
-select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2364748B' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:36px;}
+select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2364748B' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 13px center;padding-right:36px;}
 textarea.form-input{resize:vertical;min-height:80px;}
 .form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.section-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--text-muted);padding-bottom:8px;border-bottom:1px solid var(--border);margin-bottom:12px;margin-top:4px;}
 
-/* SECTION TITLE */
-.section-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--text-muted);margin-bottom:10px;margin-top:6px;padding-bottom:6px;border-bottom:1px solid var(--border);}
-
-/* FILTERS */
+/* ── FILTERS ── */
 .filters-wrap{padding:10px 14px;border-bottom:1px solid var(--border);display:flex;flex-direction:column;gap:8px;}
-.filter-row{display:flex;gap:6px;align-items:center;}
-.filter-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--text-muted);flex-shrink:0;}
-.filter-scroll{display:flex;gap:6px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:2px;scrollbar-width:none;}
+.filter-row{display:flex;align-items:center;gap:8px;}
+.filter-label{font-size:10px;font-weight:700;text-transform:uppercase;color:var(--text-muted);flex-shrink:0;letter-spacing:.4px;}
+.filter-scroll{display:flex;gap:6px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:1px;scrollbar-width:none;flex:1;}
 .filter-scroll::-webkit-scrollbar{display:none;}
-.filter-chip{padding:5px 12px;border-radius:20px;font-size:12px;font-weight:600;border:1.5px solid var(--border);background:white;cursor:pointer;color:var(--text-muted);white-space:nowrap;flex-shrink:0;transition:all .15s;-webkit-tap-highlight-color:transparent;min-height:30px;}
+.filter-chip{padding:5px 13px;border-radius:20px;font-size:12px;font-weight:600;border:1.5px solid var(--border);background:white;color:var(--text-muted);white-space:nowrap;flex-shrink:0;transition:all .15s;-webkit-tap-highlight-color:transparent;min-height:30px;}
 .filter-chip.active{border-color:var(--blue);background:var(--blue-soft);color:var(--blue);}
 
-/* MOBILE SEARCH */
-.mobile-search{display:none;padding:10px 14px;border-bottom:1px solid var(--border);}
-.mobile-search-inner{display:flex;align-items:center;gap:8px;background:var(--bg);border:1.5px solid var(--border);border-radius:8px;padding:8px 12px;}
-.mobile-search-inner input{border:none;background:none;outline:none;font-size:15px;width:100%;}
-.mobile-search-inner svg{opacity:.4;flex-shrink:0;}
+/* Mobile search inside page */
+.page-search{padding:10px 14px;border-bottom:1px solid var(--border);display:none;}
+.page-search-inner{display:flex;align-items:center;gap:8px;background:var(--bg);border:1.5px solid var(--border);border-radius:9px;padding:9px 13px;}
+.page-search-inner input{border:none;background:none;outline:none;font-size:15px;width:100%;}
+.page-search-inner svg{opacity:.4;flex-shrink:0;width:16px;height:16px;}
 
-/* MODAL - slides up from bottom on mobile */
+/* ── MODAL (bottom sheet on mobile) ── */
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:flex-end;justify-content:center;z-index:300;overflow:hidden;}
-.modal{background:white;width:100%;max-width:100%;border-radius:20px 20px 0 0;box-shadow:0 -8px 40px rgba(0,0,0,.2);display:flex;flex-direction:column;max-height:93vh;max-height:93dvh;}
+.modal{background:white;width:100%;max-width:100%;border-radius:20px 20px 0 0;box-shadow:0 -8px 40px rgba(0,0,0,.18);display:flex;flex-direction:column;max-height:92vh;}
 .modal-handle{width:36px;height:4px;background:#CBD5E1;border-radius:4px;margin:10px auto 0;flex-shrink:0;}
-.modal-header{padding:12px 18px;display:flex;align-items:center;gap:10px;flex-shrink:0;border-bottom:1px solid var(--border);}
+.modal-header{padding:12px 18px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border);flex-shrink:0;}
 .modal-header h3{font-size:16px;font-weight:700;flex:1;}
 .modal-body{padding:16px 18px;overflow-y:auto;-webkit-overflow-scrolling:touch;flex:1;}
 .modal-footer{padding:12px 18px;border-top:1px solid var(--border);display:flex;gap:8px;flex-shrink:0;padding-bottom:calc(12px + var(--safe-b));}
 .modal-footer .btn{flex:1;justify-content:center;padding:13px;font-size:14px;min-height:48px;}
 
-/* ALERT */
-.alert{padding:10px 14px;border-radius:8px;font-size:13px;margin-bottom:12px;display:flex;align-items:flex-start;gap:8px;line-height:1.4;}
+/* ── ALERT ── */
+.alert{padding:10px 14px;border-radius:9px;font-size:13px;margin-bottom:12px;display:flex;align-items:flex-start;gap:8px;line-height:1.5;}
 .alert-error{background:var(--red-soft);color:var(--red);border:1px solid #FFCDD2;}
 .alert-success{background:var(--green-soft);color:var(--green);border:1px solid #C8E6C9;}
 
-/* TOGGLE */
-.toggle{position:relative;display:inline-block;width:44px;height:24px;flex-shrink:0;}
+/* ── TOGGLE ── */
+.toggle{position:relative;display:inline-block;width:46px;height:26px;flex-shrink:0;}
 .toggle input{opacity:0;width:0;height:0;}
-.toggle-slider{position:absolute;cursor:pointer;inset:0;background:#CBD5E1;border-radius:24px;transition:.2s;}
-.toggle-slider:before{content:'';position:absolute;height:18px;width:18px;left:3px;bottom:3px;background:white;border-radius:50%;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.2);}
-.toggle input:checked + .toggle-slider{background:var(--blue);}
-.toggle input:checked + .toggle-slider:before{transform:translateX(20px);}
+.toggle-slider{position:absolute;cursor:pointer;inset:0;background:#CBD5E1;border-radius:26px;transition:.2s;}
+.toggle-slider:before{content:'';position:absolute;height:20px;width:20px;left:3px;bottom:3px;background:white;border-radius:50%;transition:.2s;box-shadow:0 1px 4px rgba(0,0,0,.2);}
+.toggle input:checked+.toggle-slider{background:var(--blue);}
+.toggle input:checked+.toggle-slider:before{transform:translateX(20px);}
 
-/* CONFIRM */
+/* ── CONFIRM ── */
 .confirm-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:flex-end;justify-content:center;z-index:400;}
-.confirm-box{background:white;border-radius:20px 20px 0 0;padding:20px;width:100%;max-width:480px;box-shadow:0 -8px 40px rgba(0,0,0,.2);padding-bottom:calc(20px + var(--safe-b));}
+.confirm-box{background:white;border-radius:20px 20px 0 0;padding:22px 20px;width:100%;max-width:480px;box-shadow:0 -8px 40px rgba(0,0,0,.2);padding-bottom:calc(22px + var(--safe-b));}
 .confirm-box h4{font-size:16px;font-weight:700;margin-bottom:8px;}
-.confirm-box p{font-size:14px;color:var(--text-muted);margin-bottom:20px;line-height:1.5;}
+.confirm-box p{font-size:14px;color:var(--text-muted);margin-bottom:22px;line-height:1.5;}
 .confirm-actions{display:flex;gap:10px;}
 .confirm-actions .btn{flex:1;justify-content:center;padding:13px;font-size:14px;}
 
-/* SPINNER */
+/* ── SPINNER ── */
 .spinner{width:18px;height:18px;border:2px solid rgba(255,255,255,.3);border-top-color:white;border-radius:50%;animation:spin .6s linear infinite;display:inline-block;flex-shrink:0;}
 .spinner-dark{border-color:rgba(0,0,0,.1);border-top-color:var(--blue);}
 @keyframes spin{to{transform:rotate(360deg);}}
 
-/* EMPTY STATE */
+/* ── EMPTY ── */
 .empty{text-align:center;padding:48px 20px;color:var(--text-muted);}
 .empty svg{opacity:.2;display:block;margin:0 auto 12px;}
 .empty p{font-size:14px;}
 
-/* LOGIN */
-#login-page{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;}
-.login-top{background:linear-gradient(135deg,#0D47A1 0%,#1565C0 60%,#1976D2 100%);padding:48px 24px 36px;color:white;text-align:center;flex-shrink:0;}
+/* ── LOGIN ── */
+#login-page{min-height:100vh;display:flex;flex-direction:column;}
+.login-top{background:linear-gradient(135deg,#0D47A1,#1565C0 55%,#1976D2);padding:48px 24px 36px;color:white;text-align:center;}
 .login-top h1{font-size:22px;font-weight:700;margin-top:12px;}
 .login-top p{font-size:13px;opacity:.7;margin-top:4px;}
-.login-bottom{flex:1;background:white;padding:28px 24px;display:flex;flex-direction:column;}
+.login-bottom{flex:1;background:white;padding:30px 24px;display:flex;flex-direction:column;}
 .login-bottom h2{font-size:22px;font-weight:700;margin-bottom:4px;}
 .login-bottom .sub{color:var(--text-muted);font-size:13px;margin-bottom:24px;}
-#login-btn{min-height:48px;font-size:15px;margin-top:8px;}
+#login-btn{min-height:50px;font-size:15px;margin-top:8px;}
 
-/* PAGE */
+/* ── PAGES ── */
 .page{display:none;}
 .page.active{display:block;}
 
-/* BOTTOM NAV */
-#bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:white;border-top:1px solid var(--border);z-index:150;padding-bottom:var(--safe-b);box-shadow:0 -2px 12px rgba(0,0,0,.06);}
+/* ── BOTTOM NAV ── */
+#bottom-nav{
+  display:none;position:fixed;bottom:0;left:0;right:0;
+  background:white;border-top:1px solid var(--border);
+  z-index:150;padding-bottom:var(--safe-b);
+  box-shadow:0 -2px 10px rgba(0,0,0,.06);
+}
 .bn-items{display:flex;}
-.bn-item{flex:1;display:flex;flex-direction:column;align-items:center;padding:8px 4px;gap:3px;background:none;border:none;cursor:pointer;color:var(--text-muted);font-size:10px;font-weight:600;transition:color .15s;-webkit-tap-highlight-color:transparent;min-height:56px;}
+.bn-item{
+  flex:1;display:flex;flex-direction:column;align-items:center;
+  padding:8px 4px;gap:3px;background:none;border:none;
+  color:var(--text-muted);font-size:10px;font-weight:600;
+  transition:color .15s;-webkit-tap-highlight-color:transparent;min-height:56px;
+}
 .bn-item svg{width:22px;height:22px;}
 .bn-item.active{color:var(--blue);}
 
-/* RESPONSIVE */
-@media(max-width:1024px){.stats-row{grid-template-columns:repeat(2,1fr);}}
+/* ══════════════════════════════════
+   RESPONSIVE
+══════════════════════════════════ */
+
+/* Tablet */
+@media(max-width:1024px){
+  .stats-row{grid-template-columns:repeat(3,1fr);}
+}
+
+/* Mobile — everything under 768px */
 @media(max-width:768px){
+  /* Hide desktop sidebar, show bottom nav */
   #sidebar{transform:translateX(-100%);}
   #sidebar.open{transform:translateX(0);box-shadow:4px 0 24px rgba(0,0,0,.2);}
   #main{margin-left:0;padding-bottom:calc(56px + var(--safe-b));}
   #bottom-nav{display:block;}
-  .tb-menu{display:flex;}
+
+  /* Topbar: show hamburger, hide desktop search */
+  #tb-menu{display:flex;}
   .tb-search{display:none;}
   #topbar{padding:0 12px;}
-  .mobile-search{display:block;}
+
+  /* Show in-page search on mobile */
+  .page-search{display:block;}
+
+  /* Content padding */
   #content{padding:12px;}
-  .stats-row{grid-template-columns:repeat(2,1fr);gap:8px;}
+
+  /* Stats: 3 smaller cards in a row */
+  .stats-row{grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px;}
+  .stat-card{padding:11px 12px;}
   .stat-value{font-size:22px;}
+  .stat-label{font-size:9px;}
+  .stat-sub{display:none;}
+
+  /* Hide desktop table, show card list */
   .tbl-wrap{display:none;}
   .req-list{display:flex;}
-  .form-row{grid-template-columns:1fr;gap:0;}
+
+  /* Forms single column */
+  .form-row{grid-template-columns:1fr;}
+
+  /* Account page full width */
   #page-account .card{max-width:100%;}
 }
-@media(max-width:380px){
+
+/* Small phones */
+@media(max-width:420px){
   .stats-row{gap:6px;}
   .stat-value{font-size:20px;}
-  .stat-sub{display:none;}
+  .stat-card{padding:10px 10px;}
   #content{padding:10px;}
+  .req-card-actions .btn{font-size:12px;padding:8px 6px;}
 }
 </style>
 </head>
 <body>
 
-<div id="sidebar-overlay" onclick="closeSidebar()"></div>
+<div id="sb-overlay" onclick="closeSidebar()"></div>
 
-<!-- LOGIN -->
+<!-- ══ LOGIN ══════════════════════════════════════════ -->
 <div id="login-page">
   <div class="login-top">
     <svg width="52" height="52" viewBox="0 0 24 24" fill="white" opacity=".95"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>
@@ -247,11 +304,11 @@ textarea.form-input{resize:vertical;min-height:80px;}
   </div>
   <div class="login-bottom">
     <h2>Welcome back</h2>
-    <p class="sub">Sign in to your account to continue</p>
+    <p class="sub">Sign in to continue</p>
     <div id="login-error" class="alert alert-error" style="display:none"></div>
     <div class="form-group">
       <label class="form-label">Username</label>
-      <input class="form-input" type="text" id="login-username" placeholder="Enter username" autocomplete="username" autocapitalize="none" autocorrect="off">
+      <input class="form-input" type="text" id="login-username" placeholder="Enter username" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false">
     </div>
     <div class="form-group">
       <label class="form-label">Password</label>
@@ -261,24 +318,27 @@ textarea.form-input{resize:vertical;min-height:80px;}
   </div>
 </div>
 
-<!-- APP -->
+<!-- ══ APP ════════════════════════════════════════════ -->
 <div id="app" style="display:none">
 
   <!-- SIDEBAR -->
   <div id="sidebar">
-    <div class="sb-brand"><h1>Assistance Manager</h1><p>Calamba City Hall</p></div>
+    <div class="sb-brand">
+      <h1>Assistance Manager</h1>
+      <p>Calamba City Hall</p>
+    </div>
     <nav class="sb-nav">
-      <button class="sb-item active" onclick="showPage('dashboard')" id="nav-dashboard">
-        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>Dashboard
-      </button>
-      <button class="sb-item" onclick="showPage('requests')" id="nav-requests">
-        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.89 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>Requests
+      <button class="sb-item active" onclick="showPage('requests')" id="nav-requests">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.89 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+        Requests
       </button>
       <button class="sb-item" onclick="showPage('users')" id="nav-users" style="display:none">
-        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>User Management
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+        User Management
       </button>
       <button class="sb-item" onclick="showPage('account')" id="nav-account">
-        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>My Account
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+        My Account
       </button>
     </nav>
     <div class="sb-user">
@@ -291,59 +351,69 @@ textarea.form-input{resize:vertical;min-height:80px;}
   <!-- MAIN -->
   <div id="main">
     <div id="topbar">
-      <button class="tb-menu" onclick="toggleSidebar()">
+      <button id="tb-menu" onclick="toggleSidebar()">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
       </button>
-      <div class="tb-title" id="page-title">Dashboard</div>
+      <div class="tb-title" id="page-title">Requests</div>
       <div class="tb-search">
         <svg viewBox="0 0 24 24" fill="currentColor"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
-        <input type="text" placeholder="Search requests…" oninput="handleSearch(this.value)">
+        <input type="text" placeholder="Search requests…" oninput="handleSearch(this.value)" id="desktop-search">
       </div>
     </div>
 
     <div id="content">
 
-      <!-- DASHBOARD -->
-      <div class="page active" id="page-dashboard">
-        <div class="stats-row" id="stats-row"></div>
-        <div class="card">
-          <div class="card-header">
-            <h2>Recent Requests</h2>
-            <button class="btn btn-ghost btn-sm" onclick="showPage('requests')">View All</button>
-          </div>
-          <div class="tbl-wrap">
-            <table><thead><tr><th>Name</th><th>Type</th><th>Status</th><th>Date</th></tr></thead>
-            <tbody id="recent-tbody"></tbody></table>
-          </div>
-          <div class="req-list" id="recent-list"></div>
-        </div>
-      </div>
+      <!-- ── REQUESTS PAGE ── -->
+      <div class="page active" id="page-requests">
 
-      <!-- REQUESTS -->
-      <div class="page" id="page-requests">
+        <!-- Stats strip -->
+        <div class="stats-row" id="stats-row">
+          <div class="stat-card">
+            <div class="stat-label">Total</div>
+            <div class="stat-value" id="stat-total" style="color:var(--blue)">—</div>
+            <div class="stat-sub">All requests</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Completed</div>
+            <div class="stat-value" id="stat-done" style="color:var(--green)">—</div>
+            <div class="stat-sub" id="stat-pct">—</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Pending</div>
+            <div class="stat-value" id="stat-pending" style="color:#F57F17">—</div>
+            <div class="stat-sub">In progress</div>
+          </div>
+        </div>
+
+        <!-- Requests card -->
         <div class="card">
           <div class="card-header">
-            <h2>Requests</h2>
+            <h2>Assistance Requests</h2>
             <button class="btn btn-ghost btn-sm" onclick="refreshData()" title="Refresh">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
             </button>
             <button class="btn btn-primary btn-sm" onclick="openAddModal()">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>New
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+              New Request
             </button>
           </div>
-          <div class="mobile-search">
-            <div class="mobile-search-inner">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
-              <input type="text" placeholder="Search by name, type…" oninput="handleSearch(this.value)">
+
+          <!-- Mobile search (hidden on desktop) -->
+          <div class="page-search">
+            <div class="page-search-inner">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+              <input type="text" placeholder="Search by name, type, address…" oninput="handleSearch(this.value)" id="mobile-search">
             </div>
           </div>
+
+          <!-- Filters -->
           <div class="filters-wrap">
             <div class="filter-row">
-              <span class="filter-label">Type:</span>
+              <span class="filter-label">Type</span>
               <div class="filter-scroll" id="type-filters"></div>
             </div>
             <div class="filter-row">
-              <span class="filter-label">Status:</span>
+              <span class="filter-label">Status</span>
               <div class="filter-scroll">
                 <button class="filter-chip active" id="filter-all" onclick="setStatusFilter('all')">All</button>
                 <button class="filter-chip" id="filter-pending" onclick="setStatusFilter('pending')">Pending</button>
@@ -351,11 +421,19 @@ textarea.form-input{resize:vertical;min-height:80px;}
               </div>
             </div>
           </div>
+
+          <!-- Desktop table -->
           <div class="tbl-wrap">
-            <table><thead><tr><th>Name</th><th>Type</th><th>Contact</th><th>Amount</th><th>Status</th><th>Date</th><th>Actions</th></tr></thead>
-            <tbody id="requests-tbody"></tbody></table>
+            <table>
+              <thead><tr><th>Name</th><th>Type</th><th>Contact</th><th>Amount</th><th>Status</th><th>Date</th><th>Actions</th></tr></thead>
+              <tbody id="requests-tbody"></tbody>
+            </table>
           </div>
+
+          <!-- Mobile card list -->
           <div class="req-list" id="requests-list"></div>
+
+          <!-- Empty state -->
           <div id="requests-empty" class="empty" style="display:none">
             <svg width="44" height="44" viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.89 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
             <p>No requests found</p>
@@ -363,23 +441,26 @@ textarea.form-input{resize:vertical;min-height:80px;}
         </div>
       </div>
 
-      <!-- USERS (admin only) -->
+      <!-- ── USERS PAGE ── -->
       <div class="page" id="page-users">
         <div class="card">
           <div class="card-header">
             <h2>User Management</h2>
             <button class="btn btn-primary btn-sm" onclick="openAddUserModal()">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>Add User
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+              Add User
             </button>
           </div>
           <div class="tbl-wrap">
-            <table><thead><tr><th>Name</th><th>Username</th><th>Role</th><th>Last Login</th><th>Actions</th></tr></thead>
-            <tbody id="users-tbody"></tbody></table>
+            <table>
+              <thead><tr><th>Name</th><th>Username</th><th>Role</th><th>Last Login</th><th>Actions</th></tr></thead>
+              <tbody id="users-tbody"></tbody>
+            </table>
           </div>
         </div>
       </div>
 
-      <!-- ACCOUNT -->
+      <!-- ── ACCOUNT PAGE ── -->
       <div class="page" id="page-account">
         <div class="card" style="max-width:520px">
           <div class="card-header"><h2>My Account</h2></div>
@@ -388,7 +469,10 @@ textarea.form-input{resize:vertical;min-height:80px;}
             <div class="section-title">Profile</div>
             <div class="form-group"><label class="form-label">Full Name</label><input class="form-input" type="text" id="acc-fullname" autocapitalize="words"></div>
             <div class="form-group"><label class="form-label">Username</label><input class="form-input" type="text" id="acc-username" autocapitalize="none" autocorrect="off"></div>
-            <div class="section-title" style="margin-top:20px">Change Password <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:11px">(leave blank to keep current)</span></div>
+            <div class="section-title" style="margin-top:20px">
+              Change Password
+              <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:11px"> — leave blank to keep current</span>
+            </div>
             <div class="form-group"><label class="form-label">Current Password</label><input class="form-input" type="password" id="acc-current-pw" placeholder="Current password"></div>
             <div class="form-group"><label class="form-label">New Password</label><input class="form-input" type="password" id="acc-new-pw" placeholder="Min 8 characters"></div>
             <button class="btn btn-primary" style="width:100%;min-height:48px" onclick="saveAccount()" id="acc-save-btn">Save Changes</button>
@@ -396,30 +480,30 @@ textarea.form-input{resize:vertical;min-height:80px;}
         </div>
       </div>
 
-    </div>
-  </div>
+    </div><!-- /content -->
+  </div><!-- /main -->
 
-  <!-- BOTTOM NAV (mobile) -->
+  <!-- BOTTOM NAV (mobile only) -->
   <div id="bottom-nav">
     <div class="bn-items">
-      <button class="bn-item active" onclick="showPage('dashboard')" id="bn-dashboard">
-        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>Home
-      </button>
-      <button class="bn-item" onclick="showPage('requests')" id="bn-requests">
-        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.89 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm-3 15H8v-2h3v2zm0-4H8v-2h3v2zm0-4H8V7h3v2zm4 8h-3v-2h3v2zm0-4h-3v-2h3v2zm0-4h-3V7h3v2z"/></svg>Requests
+      <button class="bn-item active" onclick="showPage('requests')" id="bn-requests">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.89 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm-3 15H8v-2h3v2zm0-4H8v-2h3v2zm0-4H8V7h3v2zm4 8h-3v-2h3v2zm0-4h-3v-2h3v2zm0-4h-3V7h3v2z"/></svg>
+        Requests
       </button>
       <button class="bn-item" onclick="showPage('users')" id="bn-users" style="display:none">
-        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>Users
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+        Users
       </button>
       <button class="bn-item" onclick="showPage('account')" id="bn-account">
-        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>Account
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+        Account
       </button>
     </div>
   </div>
 
-</div>
+</div><!-- /app -->
 
-<!-- REQUEST MODAL -->
+<!-- ══ REQUEST MODAL ══════════════════════════════════ -->
 <div class="modal-overlay" id="request-modal" style="display:none" onclick="closeModalOnBg(event,'request-modal')">
   <div class="modal">
     <div class="modal-handle"></div>
@@ -434,9 +518,13 @@ textarea.form-input{resize:vertical;min-height:80px;}
       <div class="form-group">
         <label class="form-label">Assistance Type</label>
         <select class="form-input" id="m-type" onchange="handleTypeChange()">
-          <option>Medical Assistance</option><option>Educational Assistance</option>
-          <option>Hospitalization Assistance</option><option>Burial Assistance</option>
-          <option>Solicitation</option><option>Invitation</option><option>Grants</option>
+          <option>Medical Assistance</option>
+          <option>Educational Assistance</option>
+          <option>Hospitalization Assistance</option>
+          <option>Burial Assistance</option>
+          <option>Solicitation</option>
+          <option>Invitation</option>
+          <option>Grants</option>
         </select>
       </div>
       <div class="form-row">
@@ -463,6 +551,7 @@ textarea.form-input{resize:vertical;min-height:80px;}
         <div class="form-group"><label class="form-label">City</label><input class="form-input" id="m-city" value="Calamba City"></div>
         <div class="form-group"><label class="form-label">Province</label><input class="form-input" id="m-province" value="Laguna"></div>
       </div>
+      <!-- Invitation fields -->
       <div id="invitation-fields" style="display:none">
         <div class="section-title">Invitation Details</div>
         <div class="form-group"><label class="form-label">Organization Name</label><input class="form-input" id="m-orgname" autocapitalize="words"></div>
@@ -472,12 +561,13 @@ textarea.form-input{resize:vertical;min-height:80px;}
         </div>
         <div class="form-group"><label class="form-label">Request / Purpose</label><textarea class="form-input" id="m-request" rows="3" placeholder="Describe the request…"></textarea></div>
       </div>
+      <!-- Grants fields -->
       <div id="grants-fields" style="display:none">
         <div class="section-title">Grants Details</div>
         <div class="form-group"><label class="form-label">Grants Information</label><textarea class="form-input" id="m-grants" rows="3"></textarea></div>
       </div>
       <div class="form-group" style="margin-top:8px">
-        <label style="display:flex;align-items:center;gap:12px;cursor:pointer;font-size:14px;font-weight:500;padding:4px 0">
+        <label style="display:flex;align-items:center;gap:14px;cursor:pointer;font-size:15px;font-weight:500;padding:4px 0">
           <label class="toggle"><input type="checkbox" id="m-completed"><span class="toggle-slider"></span></label>
           Mark as Completed
         </label>
@@ -490,7 +580,7 @@ textarea.form-input{resize:vertical;min-height:80px;}
   </div>
 </div>
 
-<!-- USER MODAL -->
+<!-- ══ USER MODAL ═════════════════════════════════════ -->
 <div class="modal-overlay" id="user-modal" style="display:none" onclick="closeModalOnBg(event,'user-modal')">
   <div class="modal">
     <div class="modal-handle"></div>
@@ -505,7 +595,8 @@ textarea.form-input{resize:vertical;min-height:80px;}
       <div class="form-group"><label class="form-label">Full Name</label><input class="form-input" id="u-fullname" placeholder="First Middle Last" autocapitalize="words"></div>
       <div class="form-group"><label class="form-label">Username</label><input class="form-input" id="u-username" placeholder="username" autocapitalize="none" autocorrect="off"></div>
       <div class="form-group" id="u-password-group"><label class="form-label">Password</label><input class="form-input" id="u-password" type="password" placeholder="Min 8 characters"></div>
-      <div class="form-group"><label class="form-label">Role</label>
+      <div class="form-group">
+        <label class="form-label">Role</label>
         <select class="form-input" id="u-role"><option value="Staff">Staff</option><option value="Admin">Admin</option></select>
       </div>
     </div>
@@ -516,7 +607,7 @@ textarea.form-input{resize:vertical;min-height:80px;}
   </div>
 </div>
 
-<!-- CONFIRM -->
+<!-- ══ CONFIRM ════════════════════════════════════════ -->
 <div class="confirm-overlay" id="confirm-dialog" style="display:none">
   <div class="confirm-box">
     <h4 id="confirm-title">Confirm</h4>
@@ -532,12 +623,12 @@ textarea.form-input{resize:vertical;min-height:80px;}
 const BASE_URL='https://assistance-manager.onrender.com';
 let state={user:null,requests:[],users:[],editingId:null,editingUserId:null,searchQuery:'',typeFilter:'all',statusFilter:'all'};
 
-// SESSION
-function getSession(){try{return JSON.parse(localStorage.getItem('am_session')||'null');}catch{return null;}}
-function setSession(d){localStorage.setItem('am_session',JSON.stringify(d));}
-function clearSession(){localStorage.removeItem('am_session');}
+/* ── SESSION ── */
+function getSession(){try{return JSON.parse(localStorage.getItem('am_s')||'null');}catch{return null;}}
+function setSession(d){localStorage.setItem('am_s',JSON.stringify(d));}
+function clearSession(){localStorage.removeItem('am_s');}
 
-// LOGIN
+/* ── LOGIN ── */
 async function handleLogin(){
   const un=document.getElementById('login-username').value.trim();
   const pw=document.getElementById('login-password').value;
@@ -549,19 +640,18 @@ async function handleLogin(){
     const res=await fetch(`${BASE_URL}/login`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:un,password:pw})});
     const data=await res.json();
     if(data.success){setSession(data.user);initApp(data.user);}
-    else showErr(errEl,data.message||'Login failed');
-  }catch{showErr(errEl,'Cannot connect to server. Check your internet connection.');}
+    else showErr(errEl,data.message||'Login failed. Please check your credentials.');
+  }catch{showErr(errEl,'Cannot connect to server. Please check your internet.');}
   finally{btn.innerHTML='Sign In';btn.disabled=false;}
 }
 function handleLogout(){clearSession();location.reload();}
 
-// INIT
 window.onload=()=>{
-  const s=getSession();
-  if(s)initApp(s);
+  const s=getSession();if(s)initApp(s);
   document.getElementById('login-password').addEventListener('keydown',e=>{if(e.key==='Enter')handleLogin();});
 };
 
+/* ── INIT ── */
 function initApp(user){
   state.user=user;
   document.getElementById('login-page').style.display='none';
@@ -570,48 +660,60 @@ function initApp(user){
   document.getElementById('sb-role').textContent=user.role;
   document.getElementById('acc-fullname').value=user.full_name||'';
   document.getElementById('acc-username').value=user.username||'';
-  // Show Users nav ONLY for Admin
   if(user.role==='Admin'){
     document.getElementById('nav-users').style.display='flex';
     document.getElementById('bn-users').style.display='flex';
   }
   loadTypeFilters();
   refreshData();
-  showPage('dashboard');
+  showPage('requests');
 }
 
-// PAGES
+/* ── PAGES ── */
 function showPage(page){
-  // Block non-admin from users page
   if(page==='users'&&state.user?.role!=='Admin')return;
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.sb-item,.bn-item').forEach(i=>i.classList.remove('active'));
   document.getElementById(`page-${page}`)?.classList.add('active');
   document.getElementById(`nav-${page}`)?.classList.add('active');
   document.getElementById(`bn-${page}`)?.classList.add('active');
-  const titles={dashboard:'Dashboard',requests:'Assistance Requests',users:'User Management',account:'My Account'};
+  const titles={requests:'Requests',users:'User Management',account:'My Account'};
   document.getElementById('page-title').textContent=titles[page]||'';
   closeSidebar();
   if(page==='users')loadUsers();
-  if(page==='dashboard')renderDashboard();
 }
 
-// DATA
+/* ── DATA ── */
 async function refreshData(){
-  try{const res=await fetch(`${BASE_URL}/get-assistances`);state.requests=await res.json();renderRequests();renderDashboard();}
-  catch(e){console.error('Load failed',e);}
+  try{
+    const res=await fetch(`${BASE_URL}/get-assistances`);
+    state.requests=await res.json();
+    renderRequests();
+    updateStats();
+  }catch(e){console.error('Load failed',e);}
 }
 async function loadUsers(){
   try{const res=await fetch(`${BASE_URL}/get-users`);state.users=await res.json();renderUsers();}
   catch(e){console.error('Load users failed',e);}
 }
 
-// RENDER
+/* ── STATS ── */
+function updateStats(){
+  const total=state.requests.length;
+  const done=state.requests.filter(r=>r.isCompleted).length;
+  const pending=total-done;
+  document.getElementById('stat-total').textContent=total;
+  document.getElementById('stat-done').textContent=done;
+  document.getElementById('stat-pending').textContent=pending;
+  document.getElementById('stat-pct').textContent=total?Math.round(done/total*100)+'%':'0%';
+}
+
+/* ── RENDER ── */
 const TYPE_MAP={'Medical Assistance':'medical','Educational Assistance':'educational','Hospitalization Assistance':'hospitalization','Burial Assistance':'burial','Solicitation':'solicitation','Invitation':'invitation','Grants':'grants'};
-function typeBadge(t){return `<span class="badge badge-${TYPE_MAP[t]||'medical'}">${t||'—'}</span>`;}
+function typeBadge(t){return`<span class="badge badge-${TYPE_MAP[t]||'medical'}">${t||'—'}</span>`;}
 function statusBadge(done){return done?`<span class="badge badge-done">Completed</span>`:`<span class="badge badge-pending">Pending</span>`;}
-function fmtDate(d){if(!d)return '—';return new Date(d).toLocaleDateString('en-PH',{year:'numeric',month:'short',day:'numeric'});}
-function fmtAmt(a){if(!a)return '—';return '₱'+parseFloat(a).toLocaleString('en-PH',{minimumFractionDigits:2});}
+function fmtDate(d){if(!d)return'—';return new Date(d).toLocaleDateString('en-PH',{year:'numeric',month:'short',day:'numeric'});}
+function fmtAmt(a){if(!a)return'—';return'₱'+parseFloat(a).toLocaleString('en-PH',{minimumFractionDigits:2});}
 
 function getFiltered(){
   const q=state.searchQuery.toLowerCase();
@@ -627,9 +729,14 @@ function getFiltered(){
 function renderRequests(){
   const f=getFiltered();
   const empty=document.getElementById('requests-empty');
-  if(!f.length){document.getElementById('requests-tbody').innerHTML='';document.getElementById('requests-list').innerHTML='';empty.style.display='block';return;}
+  if(!f.length){
+    document.getElementById('requests-tbody').innerHTML='';
+    document.getElementById('requests-list').innerHTML='';
+    empty.style.display='block';return;
+  }
   empty.style.display='none';
-  // Desktop table
+
+  // Desktop table rows
   document.getElementById('requests-tbody').innerHTML=f.map(r=>`
     <tr>
       <td><strong>${r.last_name}, ${r.first_name}</strong></td>
@@ -638,38 +745,44 @@ function renderRequests(){
       <td style="font-size:12px;font-family:'DM Mono',monospace">${fmtAmt(r.amount)}</td>
       <td>${statusBadge(r.isCompleted)}</td>
       <td style="font-size:12px;color:var(--text-muted)">${fmtDate(r.createdAt)}</td>
-      <td><div style="display:flex;gap:4px">
-        <button class="btn-icon" onclick="openEditModal('${r.id}')"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg></button>
-        <button class="btn-icon danger" onclick="deleteRequest('${r.id}')"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg></button>
-      </div></td>
+      <td>
+        <div style="display:flex;gap:4px">
+          <button class="btn-icon" onclick="openEditModal('${r.id}')" title="Edit">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+          </button>
+          <button class="btn-icon danger" onclick="deleteRequest('${r.id}')" title="Delete">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+          </button>
+        </div>
+      </td>
     </tr>`).join('');
-  // Mobile cards
+
+  // Mobile card list
   document.getElementById('requests-list').innerHTML=f.map(r=>`
     <div class="req-card">
       <div class="req-card-name">${r.last_name}, ${r.first_name}</div>
-      <div class="req-card-meta">${typeBadge(r.assistanceType)} ${statusBadge(r.isCompleted)}</div>
-      <div class="req-card-meta"><span>${r.contactNumber||'—'}</span><span>${fmtAmt(r.amount)}</span><span>${fmtDate(r.createdAt)}</span></div>
+      <div class="req-card-row">
+        ${typeBadge(r.assistanceType)}
+        ${statusBadge(r.isCompleted)}
+      </div>
+      <div class="req-card-row">
+        <span class="req-card-meta">${r.contactNumber||'—'}</span>
+        <span class="req-card-meta">·</span>
+        <span class="req-card-meta">${fmtAmt(r.amount)}</span>
+        <span class="req-card-meta">·</span>
+        <span class="req-card-meta">${fmtDate(r.createdAt)}</span>
+      </div>
       <div class="req-card-actions">
         <button class="btn btn-ghost" onclick="openEditModal('${r.id}')">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg> Edit
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+          Edit
         </button>
-        <button class="btn btn-ghost" style="color:var(--red);border-color:#FFCDD2" onclick="deleteRequest('${r.id}')">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg> Delete
+        <button class="btn btn-red-ghost" onclick="deleteRequest('${r.id}')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+          Delete
         </button>
       </div>
     </div>`).join('');
-}
-
-function renderDashboard(){
-  const reqs=state.requests,total=reqs.length,done=reqs.filter(r=>r.isCompleted).length;
-  document.getElementById('stats-row').innerHTML=`
-    <div class="stat-card"><div class="stat-label">Total</div><div class="stat-value" style="color:var(--blue)">${total}</div><div class="stat-sub">All requests</div></div>
-    <div class="stat-card"><div class="stat-label">Completed</div><div class="stat-value" style="color:var(--green)">${done}</div><div class="stat-sub">${total?Math.round(done/total*100):0}%</div></div>
-    <div class="stat-card"><div class="stat-label">Pending</div><div class="stat-value" style="color:#F57F17">${total-done}</div><div class="stat-sub">In progress</div></div>
-    <div class="stat-card"><div class="stat-label">Types</div><div class="stat-value" style="color:var(--purple)">${[...new Set(reqs.map(r=>r.assistanceType))].length}</div><div class="stat-sub">Categories</div></div>`;
-  const recent=reqs.slice(0,8);
-  document.getElementById('recent-tbody').innerHTML=recent.map(r=>`<tr><td><strong>${r.last_name}, ${r.first_name}</strong></td><td>${typeBadge(r.assistanceType)}</td><td>${statusBadge(r.isCompleted)}</td><td style="font-size:12px;color:var(--text-muted)">${fmtDate(r.createdAt)}</td></tr>`).join('')||'<tr><td colspan="4" style="text-align:center;color:var(--text-muted);padding:32px">No records yet</td></tr>';
-  document.getElementById('recent-list').innerHTML=recent.map(r=>`<div class="req-card"><div class="req-card-name">${r.last_name}, ${r.first_name}</div><div class="req-card-meta">${typeBadge(r.assistanceType)} ${statusBadge(r.isCompleted)} <span style="font-size:11px">${fmtDate(r.createdAt)}</span></div></div>`).join('');
 }
 
 function renderUsers(){
@@ -679,23 +792,45 @@ function renderUsers(){
       <td style="font-family:'DM Mono',monospace;font-size:12px">@${u.username}</td>
       <td><span class="badge badge-${(u.role||'').toLowerCase()}">${u.role}</span></td>
       <td style="font-size:12px;color:var(--text-muted)">${u.last_login?fmtDate(u.last_login):'Never'}</td>
-      <td><div style="display:flex;gap:4px">
-        <button class="btn-icon" onclick="openEditUserModal(${u.id})"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg></button>
-        ${u.id!==state.user?.user_id?`<button class="btn-icon danger" onclick="deleteUser(${u.id},'${u.full_name}')"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg></button>`:''}
-      </div></td>
-    </tr>`).join('')||'<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:32px">No users</td></tr>';
+      <td>
+        <div style="display:flex;gap:4px">
+          <button class="btn-icon" onclick="openEditUserModal(${u.id})">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+          </button>
+          ${u.id!==state.user?.user_id?`<button class="btn-icon danger" onclick="deleteUser(${u.id},'${u.full_name}')">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+          </button>`:''}
+        </div>
+      </td>
+    </tr>`).join('')||'<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:32px">No users found</td></tr>';
 }
 
-// FILTERS
+/* ── FILTERS ── */
 function loadTypeFilters(){
   const types=['all','Medical Assistance','Educational Assistance','Hospitalization Assistance','Burial Assistance','Solicitation','Invitation','Grants'];
-  document.getElementById('type-filters').innerHTML=types.map(t=>`<button class="filter-chip ${t==='all'?'active':''}" id="type-${t.replace(/ /g,'-')}" onclick="setTypeFilter('${t}')">${t==='all'?'All':t}</button>`).join('');
+  document.getElementById('type-filters').innerHTML=types.map(t=>`
+    <button class="filter-chip ${t==='all'?'active':''}" id="type-${t.replace(/ /g,'-')}" onclick="setTypeFilter('${t}')">${t==='all'?'All':t}</button>`).join('');
 }
-function setTypeFilter(t){state.typeFilter=t;document.querySelectorAll('#type-filters .filter-chip').forEach(c=>c.classList.remove('active'));document.getElementById(`type-${t.replace(/ /g,'-')}`)?.classList.add('active');renderRequests();}
-function setStatusFilter(s){state.statusFilter=s;['all','pending','done'].forEach(f=>document.getElementById(`filter-${f}`)?.classList.toggle('active',f===s));renderRequests();}
-function handleSearch(q){state.searchQuery=q;renderRequests();}
+function setTypeFilter(t){
+  state.typeFilter=t;
+  document.querySelectorAll('#type-filters .filter-chip').forEach(c=>c.classList.remove('active'));
+  document.getElementById(`type-${t.replace(/ /g,'-')}`)?.classList.add('active');
+  renderRequests();
+}
+function setStatusFilter(s){
+  state.statusFilter=s;
+  ['all','pending','done'].forEach(f=>document.getElementById(`filter-${f}`)?.classList.toggle('active',f===s));
+  renderRequests();
+}
+function handleSearch(q){
+  state.searchQuery=q;
+  // Sync both search inputs
+  document.getElementById('desktop-search').value=q;
+  document.getElementById('mobile-search').value=q;
+  renderRequests();
+}
 
-// REQUEST MODAL
+/* ── REQUEST MODAL ── */
 function openAddModal(){
   state.editingId=null;
   document.getElementById('modal-title').textContent='New Request';
@@ -758,17 +893,17 @@ async function saveRequest(){
     const res=await fetch(url,{method:state.editingId?'PUT':'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
     const data=await res.json();
     if(data.success||res.ok){closeModal('request-modal');await refreshData();}
-    else showErr(errEl,data.message||'Failed to save');
+    else showErr(errEl,data.message||'Failed to save request.');
   }catch{showErr(errEl,'Network error. Please try again.');}
   finally{btn.innerHTML=state.editingId?'Update':'Save';btn.disabled=false;}
 }
 async function deleteRequest(id){
   if(!await showConfirm('Delete Request','Delete this request? This cannot be undone.','Delete'))return;
   try{await fetch(`${BASE_URL}/delete-assistance/${id}`,{method:'DELETE'});await refreshData();}
-  catch{alert('Failed to delete');}
+  catch{alert('Failed to delete.');}
 }
 
-// USER MODAL
+/* ── USER MODAL ── */
 function openAddUserModal(){
   state.editingUserId=null;
   document.getElementById('user-modal-title').textContent='Add User';
@@ -807,17 +942,17 @@ async function saveUser(){
     else{const parts=fn.split(' ');res=await fetch(`${BASE_URL}/register`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({first_name:parts[0],middle_name:parts.length>2?parts.slice(1,-1).join(' '):'',last_name:parts.length>1?parts[parts.length-1]:parts[0],username:un,password:pw,role})});}
     const data=await res.json();
     if(data.success){closeModal('user-modal');loadUsers();}
-    else showErr(errEl,data.message||'Failed to save');
+    else showErr(errEl,data.message||'Failed to save.');
   }catch{showErr(errEl,'Network error.');}
   finally{btn.innerHTML=state.editingUserId?'Update':'Add User';btn.disabled=false;}
 }
 async function deleteUser(id,name){
-  if(!await showConfirm('Delete User',`Delete user "${name}"? This cannot be undone.`,'Delete'))return;
+  if(!await showConfirm('Delete User',`Delete "${name}"? This cannot be undone.`,'Delete'))return;
   try{await fetch(`${BASE_URL}/delete-user/${id}`,{method:'DELETE'});loadUsers();}
-  catch{alert('Failed to delete');}
+  catch{alert('Failed to delete.');}
 }
 
-// ACCOUNT
+/* ── ACCOUNT ── */
 async function saveAccount(){
   const fn=document.getElementById('acc-fullname').value.trim();
   const un=document.getElementById('acc-username').value.trim();
@@ -833,12 +968,12 @@ async function saveAccount(){
     const data=await res.json();
     alertEl.style.display='flex';
     if(data.success){alertEl.className='alert alert-success';alertEl.textContent='Account updated successfully!';state.user.full_name=fn;state.user.username=un;setSession(state.user);document.getElementById('sb-fullname').textContent=fn;document.getElementById('acc-current-pw').value='';document.getElementById('acc-new-pw').value='';}
-    else{alertEl.className='alert alert-error';alertEl.textContent=data.message||'Update failed';}
+    else{alertEl.className='alert alert-error';alertEl.textContent=data.message||'Update failed.';}
   }catch{alertEl.style.display='flex';alertEl.className='alert alert-error';alertEl.textContent='Network error.';}
   finally{btn.innerHTML='Save Changes';btn.disabled=false;}
 }
 
-// CONFIRM
+/* ── CONFIRM ── */
 let confirmResolve=()=>{};
 function showConfirm(title,msg,btnLabel='Confirm'){
   document.getElementById('confirm-title').textContent=title;
@@ -848,13 +983,13 @@ function showConfirm(title,msg,btnLabel='Confirm'){
   return new Promise(res=>{confirmResolve=val=>{document.getElementById('confirm-dialog').style.display='none';res(val);};});
 }
 
-// UTILS
+/* ── UTILS ── */
 function toTC(s){return s.trim().split(' ').map(w=>w?w[0].toUpperCase()+w.slice(1).toLowerCase():'').join(' ');}
 function showErr(el,msg){el.textContent=msg;el.style.display='flex';}
 function closeModal(id){document.getElementById(id).style.display='none';}
 function closeModalOnBg(e,id){if(e.target===document.getElementById(id))closeModal(id);}
-function toggleSidebar(){document.getElementById('sidebar').classList.toggle('open');document.getElementById('sidebar-overlay').classList.toggle('show');}
-function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('sidebar-overlay').classList.remove('show');}
+function toggleSidebar(){document.getElementById('sidebar').classList.toggle('open');document.getElementById('sb-overlay').classList.toggle('show');}
+function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('sb-overlay').classList.remove('show');}
 </script>
 </body>
 </html>
