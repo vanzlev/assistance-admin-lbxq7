@@ -79,11 +79,29 @@ button{cursor:pointer;}
 .tb-search input{border:none;background:none;outline:none;font-size:13px;width:100%;}
 .tb-search svg{opacity:.35;flex-shrink:0;width:15px;height:15px;}
 
-/* ── STATS ROW (3 cards, inside requests page) ── */
-.stats-row{display:flex;gap:10px;margin-bottom:14px;}
-.stat-card{flex:1;min-width:0;background:white;border-radius:var(--radius);border:1px solid var(--border);padding:12px 10px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:2px;}
-.stat-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.stat-value{font-size:clamp(18px,4vw,28px);font-weight:700;font-family:'DM Mono',monospace;line-height:1.1;}
+/* ── STATS ROW ── */
+/* FIX: Use CSS grid so all 3 cards always fit, shrink text on small screens */
+.stats-row{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+  margin-bottom:14px;
+}
+.stat-card{
+  background:white;border-radius:var(--radius);border:1px solid var(--border);
+  padding:14px 12px;box-shadow:var(--shadow);
+  display:flex;flex-direction:column;gap:2px;
+  min-width:0; /* critical: allows grid children to shrink below content size */
+}
+.stat-label{
+  font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;
+  color:var(--text-muted);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.stat-value{
+  font-size:clamp(22px,5vw,32px);font-weight:700;
+  font-family:'DM Mono',monospace;line-height:1.1;
+}
 .stat-sub{font-size:11px;color:var(--text-muted);}
 
 /* ── CARD ── */
@@ -100,14 +118,28 @@ td{padding:11px 14px;border-bottom:1px solid var(--border);vertical-align:middle
 tr:last-child td{border-bottom:none;}
 tr:hover td{background:#FAFBFF;}
 
-/* ── MOBILE CARD LIST ── */
+/* ── MOBILE CARD LIST (requests) ── */
 .req-list{display:none;flex-direction:column;gap:10px;padding:12px;}
 .req-card{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:13px 14px;display:flex;flex-direction:column;gap:7px;}
 .req-card-name{font-weight:700;font-size:15px;}
 .req-card-row{display:flex;gap:6px;flex-wrap:wrap;align-items:center;}
 .req-card-meta{font-size:12px;color:var(--text-muted);}
+/* FIX: actions row — both buttons always visible */
 .req-card-actions{display:flex;gap:8px;padding-top:6px;border-top:1px solid var(--border);margin-top:2px;}
-.req-card-actions .btn{flex:1;justify-content:center;font-size:13px;padding:9px;min-height:42px;}
+.req-card-actions .btn{
+  flex:1;justify-content:center;
+  font-size:13px;padding:9px 6px;min-height:42px;
+}
+
+/* ── MOBILE CARD LIST (users) ── */
+/* FIX: add a mobile card view for users table */
+.user-list{display:none;flex-direction:column;gap:10px;padding:12px;}
+.user-card{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:13px 14px;display:flex;flex-direction:column;gap:7px;}
+.user-card-name{font-weight:700;font-size:15px;}
+.user-card-row{display:flex;gap:6px;flex-wrap:wrap;align-items:center;}
+.user-card-meta{font-size:12px;color:var(--text-muted);font-family:'DM Mono',monospace;}
+.user-card-actions{display:flex;gap:8px;padding-top:6px;border-top:1px solid var(--border);margin-top:2px;}
+.user-card-actions .btn{flex:1;justify-content:center;font-size:13px;padding:9px 6px;min-height:42px;}
 
 /* ── BADGES ── */
 .badge{display:inline-flex;align-items:center;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600;white-space:nowrap;}
@@ -173,6 +205,13 @@ textarea.form-input{resize:vertical;min-height:80px;}
 .modal-footer{padding:12px 18px;border-top:1px solid var(--border);display:flex;gap:8px;flex-shrink:0;padding-bottom:calc(12px + var(--safe-b));}
 .modal-footer .btn{flex:1;justify-content:center;padding:13px;font-size:14px;min-height:48px;}
 
+/* Desktop modal center */
+@media(min-width:769px){
+  .modal-overlay{align-items:center;}
+  .modal{max-width:560px;border-radius:16px;max-height:88vh;}
+  .modal-handle{display:none;}
+}
+
 /* ── ALERT ── */
 .alert{padding:10px 14px;border-radius:9px;font-size:13px;margin-bottom:12px;display:flex;align-items:flex-start;gap:8px;line-height:1.5;}
 .alert-error{background:var(--red-soft);color:var(--red);border:1px solid #FFCDD2;}
@@ -193,6 +232,10 @@ textarea.form-input{resize:vertical;min-height:80px;}
 .confirm-box p{font-size:14px;color:var(--text-muted);margin-bottom:22px;line-height:1.5;}
 .confirm-actions{display:flex;gap:10px;}
 .confirm-actions .btn{flex:1;justify-content:center;padding:13px;font-size:14px;}
+@media(min-width:769px){
+  .confirm-overlay{align-items:center;}
+  .confirm-box{border-radius:16px;max-width:420px;}
+}
 
 /* ── SPINNER ── */
 .spinner{width:18px;height:18px;border:2px solid rgba(255,255,255,.3);border-top-color:white;border-radius:50%;animation:spin .6s linear infinite;display:inline-block;flex-shrink:0;}
@@ -236,42 +279,58 @@ textarea.form-input{resize:vertical;min-height:80px;}
 .bn-item.active{color:var(--blue);}
 
 /* ══════════════════════════════════
-   RESPONSIVE
+   RESPONSIVE BREAKPOINTS
 ══════════════════════════════════ */
-
-/* Tablet */
-@media(max-width:1024px){
-  .stats-row{grid-template-columns:repeat(3,1fr);}
-}
 
 /* Mobile — everything under 768px */
 @media(max-width:768px){
+  /* Sidebar off-canvas */
   #sidebar{transform:translateX(-100%);}
   #sidebar.open{transform:translateX(0);box-shadow:4px 0 24px rgba(0,0,0,.2);}
-  #main{margin-left:0;padding-bottom:calc(56px + var(--safe-b));}
+
+  /* Main shifts up for bottom nav */
+  #main{margin-left:0;padding-bottom:calc(62px + var(--safe-b));}
+
+  /* Show bottom nav & hamburger, hide desktop search */
   #bottom-nav{display:block;}
   #tb-menu{display:flex;}
   .tb-search{display:none;}
   #topbar{padding:0 12px;}
+
+  /* Show mobile search bar inside page */
   .page-search{display:block;}
+
+  /* Reduce content padding */
   #content{padding:10px;}
-  /* Stats: flex already handles 3 cols, just reduce padding */
+
+  /* Stats: stay 3 columns but tighter */
+  .stats-row{gap:6px;}
   .stat-card{padding:10px 8px;}
-  .stat-sub{display:none;}
-  /* Hide desktop table, show card list */
+  /* Hide "sub" text on very small screens — done in 400px block */
+  .stat-value{font-size:clamp(20px,6vw,28px);}
+
+  /* Hide desktop table, show card lists */
   .tbl-wrap{display:none;}
   .req-list{display:flex;}
+  .user-list{display:flex;}
+
   /* Forms single column */
   .form-row{grid-template-columns:1fr;}
+
+  /* Account page full width */
   #page-account .card{max-width:100%;}
 }
 
-/* Small phones */
+/* Small phones (≤ 400px) — extra tightening */
 @media(max-width:400px){
-  .stats-row{gap:6px;}
-  .stat-card{padding:9px 7px;}
+  .stats-row{gap:5px;}
+  .stat-card{padding:8px 6px;}
+  .stat-sub{display:none;}
+  .stat-label{font-size:9px;}
   #content{padding:8px;}
-  .req-card-actions .btn{font-size:12px;padding:8px 6px;}
+  .req-card-actions .btn{font-size:12px;padding:8px 4px;gap:4px;}
+  .req-card-actions .btn svg{width:13px;height:13px;}
+  .user-card-actions .btn{font-size:12px;padding:8px 4px;gap:4px;}
 }
 </style>
 </head>
@@ -350,7 +409,7 @@ textarea.form-input{resize:vertical;min-height:80px;}
       <!-- ── REQUESTS PAGE ── -->
       <div class="page active" id="page-requests">
 
-        <!-- Stats strip -->
+        <!-- Stats strip: always 3 columns -->
         <div class="stats-row" id="stats-row">
           <div class="stat-card">
             <div class="stat-label">Total</div>
@@ -382,7 +441,7 @@ textarea.form-input{resize:vertical;min-height:80px;}
             </button>
           </div>
 
-          <!-- Mobile search (hidden on desktop) -->
+          <!-- Mobile search -->
           <div class="page-search">
             <div class="page-search-inner">
               <svg viewBox="0 0 24 24" fill="currentColor"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
@@ -435,11 +494,19 @@ textarea.form-input{resize:vertical;min-height:80px;}
               Add User
             </button>
           </div>
+          <!-- Desktop table -->
           <div class="tbl-wrap">
             <table>
               <thead><tr><th>Name</th><th>Username</th><th>Role</th><th>Last Login</th><th>Actions</th></tr></thead>
               <tbody id="users-tbody"></tbody>
             </table>
+          </div>
+          <!-- Mobile user card list -->
+          <div class="user-list" id="users-list"></div>
+          <!-- Empty -->
+          <div id="users-empty" class="empty" style="display:none">
+            <svg width="44" height="44" viewBox="0 0 24 24" fill="currentColor"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+            <p>No users found</p>
           </div>
         </div>
       </div>
@@ -677,8 +744,11 @@ async function refreshData(){
   }catch(e){console.error('Load failed',e);}
 }
 async function loadUsers(){
-  try{const res=await fetch(`${BASE_URL}/get-users`);state.users=await res.json();renderUsers();}
-  catch(e){console.error('Load users failed',e);}
+  try{
+    const res=await fetch(`${BASE_URL}/get-users`);
+    state.users=await res.json();
+    renderUsers();
+  }catch(e){console.error('Load users failed',e);}
 }
 
 /* ── STATS ── */
@@ -720,7 +790,7 @@ function renderRequests(){
   }
   empty.style.display='none';
 
-  // Desktop table rows
+  // Desktop table
   document.getElementById('requests-tbody').innerHTML=f.map(r=>`
     <tr>
       <td><strong>${r.last_name}, ${r.first_name}</strong></td>
@@ -741,7 +811,7 @@ function renderRequests(){
       </td>
     </tr>`).join('');
 
-  // Mobile card list
+  // Mobile cards — FIXED: always show both Edit and Delete buttons
   document.getElementById('requests-list').innerHTML=f.map(r=>`
     <div class="req-card">
       <div class="req-card-name">${r.last_name}, ${r.first_name}</div>
@@ -770,6 +840,15 @@ function renderRequests(){
 }
 
 function renderUsers(){
+  const empty=document.getElementById('users-empty');
+  if(!state.users.length){
+    document.getElementById('users-tbody').innerHTML='';
+    document.getElementById('users-list').innerHTML='';
+    empty.style.display='block';return;
+  }
+  empty.style.display='none';
+
+  // Desktop table
   document.getElementById('users-tbody').innerHTML=state.users.map(u=>`
     <tr>
       <td><strong>${u.full_name||'—'}</strong></td>
@@ -778,15 +857,38 @@ function renderUsers(){
       <td style="font-size:12px;color:var(--text-muted)">${u.last_login?fmtDate(u.last_login):'Never'}</td>
       <td>
         <div style="display:flex;gap:4px">
-          <button class="btn-icon" onclick="openEditUserModal(${u.id})">
+          <button class="btn-icon" onclick="openEditUserModal(${u.id})" title="Edit">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
           </button>
-          ${u.id!==state.user?.user_id?`<button class="btn-icon danger" onclick="deleteUser(${u.id},'${u.full_name}')">
+          ${u.id!==state.user?.user_id?`<button class="btn-icon danger" onclick="deleteUser(${u.id},'${u.full_name}')" title="Delete">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
           </button>`:''}
         </div>
       </td>
-    </tr>`).join('')||'<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:32px">No users found</td></tr>';
+    </tr>`).join('');
+
+  // Mobile user cards
+  document.getElementById('users-list').innerHTML=state.users.map(u=>`
+    <div class="user-card">
+      <div class="user-card-name">${u.full_name||'—'}</div>
+      <div class="user-card-row">
+        <span class="badge badge-${(u.role||'').toLowerCase()}">${u.role}</span>
+        <span class="user-card-meta">@${u.username}</span>
+      </div>
+      <div class="user-card-row">
+        <span class="user-card-meta" style="font-family:inherit;color:var(--text-muted);font-size:12px">Last login: ${u.last_login?fmtDate(u.last_login):'Never'}</span>
+      </div>
+      <div class="user-card-actions">
+        <button class="btn btn-ghost" onclick="openEditUserModal(${u.id})">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+          Edit
+        </button>
+        ${u.id!==state.user?.user_id?`<button class="btn btn-red-ghost" onclick="deleteUser(${u.id},'${u.full_name}')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+          Delete
+        </button>`:''}
+      </div>
+    </div>`).join('');
 }
 
 /* ── FILTERS ── */
@@ -808,7 +910,6 @@ function setStatusFilter(s){
 }
 function handleSearch(q){
   state.searchQuery=q;
-  // Sync both search inputs
   document.getElementById('desktop-search').value=q;
   document.getElementById('mobile-search').value=q;
   renderRequests();
@@ -922,8 +1023,12 @@ async function saveUser(){
   btn.innerHTML='<span class="spinner"></span>';btn.disabled=true;errEl.style.display='none';
   try{
     let res;
-    if(state.editingUserId){res=await fetch(`${BASE_URL}/admin-update-user/${state.editingUserId}`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({full_name:fn,username:un,role})});}
-    else{const parts=fn.split(' ');res=await fetch(`${BASE_URL}/register`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({first_name:parts[0],middle_name:parts.length>2?parts.slice(1,-1).join(' '):'',last_name:parts.length>1?parts[parts.length-1]:parts[0],username:un,password:pw,role})});}
+    if(state.editingUserId){
+      res=await fetch(`${BASE_URL}/admin-update-user/${state.editingUserId}`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({full_name:fn,username:un,role})});
+    }else{
+      const parts=fn.split(' ');
+      res=await fetch(`${BASE_URL}/register`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({first_name:parts[0],middle_name:parts.length>2?parts.slice(1,-1).join(' '):'',last_name:parts.length>1?parts[parts.length-1]:parts[0],username:un,password:pw,role})});
+    }
     const data=await res.json();
     if(data.success){closeModal('user-modal');loadUsers();}
     else showErr(errEl,data.message||'Failed to save.');
