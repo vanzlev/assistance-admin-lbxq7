@@ -45,7 +45,7 @@ button{cursor:pointer;}
   display:flex;align-items:center;gap:12px;
   position:sticky;top:0;z-index:100;
 }
-#content{padding:20px;flex:1;}
+#content{padding:20px;flex:1;max-width:1200px;width:100%;}
 
 /* ── SIDEBAR ── */
 .sb-brand{padding:18px 16px 14px;border-bottom:1px solid rgba(255,255,255,.15);}
@@ -73,17 +73,17 @@ button{cursor:pointer;}
 #sb-overlay.show{display:block;}
 
 /* ── TOPBAR ── */
-#tb-menu{display:none;background:none;border:none;padding:6px;color:var(--text);min-width:40px;min-height:40px;border-radius:8px;align-items:center;justify-content:center;}
+#tb-menu{display:none;background:none;border:none;padding:6px;color:var(--text);min-width:44px;min-height:44px;border-radius:8px;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;}
 .tb-title{font-size:16px;font-weight:700;flex:1;}
 .tb-search{display:flex;align-items:center;gap:8px;background:var(--bg);border:1.5px solid var(--border);border-radius:9px;padding:7px 13px;width:230px;}
 .tb-search input{border:none;background:none;outline:none;font-size:13px;width:100%;}
 .tb-search svg{opacity:.35;flex-shrink:0;width:15px;height:15px;}
 
 /* ── STATS ROW (3 cards, inside requests page) ── */
-.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px;}
-.stat-card{background:white;border-radius:var(--radius);border:1px solid var(--border);padding:14px 16px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:3px;}
-.stat-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);}
-.stat-value{font-size:28px;font-weight:700;font-family:'DM Mono',monospace;line-height:1.1;}
+.stats-row{display:flex;gap:10px;margin-bottom:14px;}
+.stat-card{flex:1;min-width:0;background:white;border-radius:var(--radius);border:1px solid var(--border);padding:12px 10px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:2px;}
+.stat-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.stat-value{font-size:clamp(18px,4vw,28px);font-weight:700;font-family:'DM Mono',monospace;line-height:1.1;}
 .stat-sub{font-size:11px;color:var(--text-muted);}
 
 /* ── CARD ── */
@@ -106,8 +106,8 @@ tr:hover td{background:#FAFBFF;}
 .req-card-name{font-weight:700;font-size:15px;}
 .req-card-row{display:flex;gap:6px;flex-wrap:wrap;align-items:center;}
 .req-card-meta{font-size:12px;color:var(--text-muted);}
-.req-card-actions{display:flex;gap:8px;padding-top:4px;border-top:1px solid var(--border);}
-.req-card-actions .btn{flex:1;justify-content:center;font-size:13px;padding:9px;}
+.req-card-actions{display:flex;gap:8px;padding-top:6px;border-top:1px solid var(--border);margin-top:2px;}
+.req-card-actions .btn{flex:1;justify-content:center;font-size:13px;padding:9px;min-height:42px;}
 
 /* ── BADGES ── */
 .badge{display:inline-flex;align-items:center;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600;white-space:nowrap;}
@@ -246,47 +246,31 @@ textarea.form-input{resize:vertical;min-height:80px;}
 
 /* Mobile — everything under 768px */
 @media(max-width:768px){
-  /* Hide desktop sidebar, show bottom nav */
   #sidebar{transform:translateX(-100%);}
   #sidebar.open{transform:translateX(0);box-shadow:4px 0 24px rgba(0,0,0,.2);}
   #main{margin-left:0;padding-bottom:calc(56px + var(--safe-b));}
   #bottom-nav{display:block;}
-
-  /* Topbar: show hamburger, hide desktop search */
   #tb-menu{display:flex;}
   .tb-search{display:none;}
   #topbar{padding:0 12px;}
-
-  /* Show in-page search on mobile */
   .page-search{display:block;}
-
-  /* Content padding */
-  #content{padding:12px;}
-
-  /* Stats: 3 smaller cards in a row */
-  .stats-row{grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px;}
-  .stat-card{padding:11px 12px;}
-  .stat-value{font-size:22px;}
-  .stat-label{font-size:9px;}
+  #content{padding:10px;}
+  /* Stats: flex already handles 3 cols, just reduce padding */
+  .stat-card{padding:10px 8px;}
   .stat-sub{display:none;}
-
   /* Hide desktop table, show card list */
   .tbl-wrap{display:none;}
   .req-list{display:flex;}
-
   /* Forms single column */
   .form-row{grid-template-columns:1fr;}
-
-  /* Account page full width */
   #page-account .card{max-width:100%;}
 }
 
 /* Small phones */
-@media(max-width:420px){
+@media(max-width:400px){
   .stats-row{gap:6px;}
-  .stat-value{font-size:20px;}
-  .stat-card{padding:10px 10px;}
-  #content{padding:10px;}
+  .stat-card{padding:9px 7px;}
+  #content{padding:8px;}
   .req-card-actions .btn{font-size:12px;padding:8px 6px;}
 }
 </style>
