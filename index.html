@@ -45,7 +45,7 @@ button{cursor:pointer;}
   display:flex;align-items:center;gap:12px;
   position:sticky;top:0;z-index:100;
 }
-#content{padding:20px;flex:1;max-width:1200px;width:100%;}
+#content{padding:20px;flex:1;max-width:1200px;width:100%;margin:0 auto;}
 
 /* ── SIDEBAR ── */
 .sb-brand{padding:18px 16px 14px;border-bottom:1px solid rgba(255,255,255,.15);}
@@ -120,39 +120,23 @@ tr:hover td{background:#FAFBFF;}
 
 /* ── MOBILE CARD LIST (requests) ── */
 .req-list{display:none;flex-direction:column;gap:10px;padding:12px;}
-.req-card{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:13px 14px;display:flex;flex-direction:column;gap:7px;}
+.req-card{background:white;border:1px solid var(--border);border-radius:10px;padding:13px 14px;display:flex;flex-direction:column;gap:7px;box-shadow:0 1px 3px rgba(0,0,0,.05);}
 .req-card-name{font-weight:700;font-size:15px;}
 .req-card-row{display:flex;gap:6px;flex-wrap:wrap;align-items:center;}
-.req-card-meta{font-size:12px;color:var(--text-muted);}
-/* FIX: actions row — both buttons always visible */
-.req-card-actions{display:flex;gap:8px;padding-top:6px;border-top:1px solid var(--border);margin-top:2px;}
-.req-card-actions .btn{
-  display:inline-flex;align-items:center;justify-content:center;
-  gap:6px;padding:8px 14px;border-radius:8px;font-size:13px;font-weight:600;
-  border:none;transition:all .15s;cursor:pointer;
-  -webkit-tap-highlight-color:transparent;min-height:36px;white-space:nowrap;
-  font-family:'DM Sans',sans-serif;
-}
-.btn-primary{background:var(--blue);color:white;}
-.btn-primary:hover{background:var(--blue-light);color:white;}
-.btn-ghost{background:transparent;color:var(--text-muted);border:1px solid var(--border);}
-.btn-ghost:hover{background:var(--bg);}
-.btn-red-ghost{background:transparent;color:var(--red);border:1px solid #FFCDD2;}
-.btn-red-ghost:hover{background:var(--red-soft);}
-/* Card action buttons fill their container */
-.req-card-actions .btn,.user-card-actions .btn{
-  flex:1;justify-content:center;font-size:13px;padding:9px 6px;min-height:42px;
-}
+.req-card-meta-row{display:flex;flex-wrap:wrap;gap:5px 14px;}
+.req-card-meta-item{display:flex;align-items:center;gap:4px;font-size:12px;color:var(--text-muted);line-height:1.3;}
+.req-card-meta-item svg{opacity:.45;flex-shrink:0;width:12px;height:12px;}
+.req-card-actions{display:flex;gap:8px;padding-top:8px;border-top:1px solid var(--border);margin-top:2px;}
+.req-card-actions .btn{flex:1;justify-content:center;font-size:13px;padding:9px 6px;min-height:40px;}
 
 /* ── MOBILE CARD LIST (users) ── */
-/* FIX: add a mobile card view for users table */
 .user-list{display:none;flex-direction:column;gap:10px;padding:12px;}
-.user-card{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:13px 14px;display:flex;flex-direction:column;gap:7px;}
+.user-card{background:white;border:1px solid var(--border);border-radius:10px;padding:13px 14px;display:flex;flex-direction:column;gap:7px;box-shadow:0 1px 3px rgba(0,0,0,.05);}
 .user-card-name{font-weight:700;font-size:15px;}
 .user-card-row{display:flex;gap:6px;flex-wrap:wrap;align-items:center;}
 .user-card-meta{font-size:12px;color:var(--text-muted);font-family:'DM Mono',monospace;}
-.user-card-actions{display:flex;gap:8px;padding-top:6px;border-top:1px solid var(--border);margin-top:2px;}
-.user-card-actions .btn{flex:1;justify-content:center;font-size:13px;padding:9px 6px;min-height:42px;}
+.user-card-actions{display:flex;gap:8px;padding-top:8px;border-top:1px solid var(--border);margin-top:2px;}
+.user-card-actions .btn{flex:1;justify-content:center;font-size:13px;padding:9px 6px;min-height:40px;}
 
 /* ── BADGES ── */
 .badge{display:inline-flex;align-items:center;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600;white-space:nowrap;}
@@ -291,61 +275,120 @@ textarea.form-input{resize:vertical;min-height:80px;}
 .bn-item svg{width:22px;height:22px;}
 .bn-item.active{color:var(--blue);}
 
+/* ── LOADING SKELETON ── */
+@keyframes shimmer{0%{background-position:-468px 0}100%{background-position:468px 0}}
+.skeleton{
+  background:linear-gradient(90deg,#f0f4f8 25%,#e2e8f0 50%,#f0f4f8 75%);
+  background-size:936px 100%;
+  animation:shimmer 1.2s ease-in-out infinite;
+  border-radius:6px;
+}
+.sk-card{background:white;border:1px solid var(--border);border-radius:var(--radius);padding:16px 14px;display:flex;flex-direction:column;gap:10px;margin-bottom:10px;}
+.sk-line{height:12px;}
+.sk-line-sm{height:10px;width:60%;}
+.sk-badge{height:22px;width:110px;border-radius:20px;}
+.sk-actions{height:38px;border-radius:8px;}
+
+/* Desktop: hide short labels */
+.btn-new-short{display:none;}
+
 /* ══════════════════════════════════
    RESPONSIVE BREAKPOINTS
 ══════════════════════════════════ */
 
-/* Mobile — everything under 768px */
+/* ── Mobile  ≤ 768px ── */
 @media(max-width:768px){
-  /* Sidebar off-canvas */
+
+  /* --- Layout --- */
   #sidebar{transform:translateX(-100%);}
   #sidebar.open{transform:translateX(0);box-shadow:4px 0 24px rgba(0,0,0,.2);}
-
-  /* Main shifts up for bottom nav */
-  #main{margin-left:0;padding-bottom:calc(62px + var(--safe-b));}
-
-  /* Show bottom nav & hamburger, hide desktop search */
+  #main{margin-left:0;padding-bottom:calc(64px + var(--safe-b));}
   #bottom-nav{display:block;}
   #tb-menu{display:flex;}
   .tb-search{display:none;}
-  #topbar{padding:0 12px;}
+  #topbar{padding:0 12px;gap:8px;}
+  #content{padding:8px;min-height:calc(100vh - var(--topbar-h) - 64px);}
 
-  /* Show mobile search bar inside page */
-  .page-search{display:block;}
+  /* --- Page-level search bar --- */
+  .page-search{display:block;padding:8px 10px;border-bottom:1px solid var(--border);}
+  .page-search-inner{padding:9px 12px;}
+  .page-search-inner input{font-size:15px;}
 
-  /* Reduce content padding */
-  #content{padding:10px;}
-
-  /* Stats: 3 columns, aggressively small to fit 320px */
-  .stats-row{gap:5px;}
-  .stat-card{padding:8px 5px;}
+  /* --- Stats strip: 3 equal columns, text scales with vw --- */
+  .stats-row{gap:6px;margin-bottom:10px;}
+  .stat-card{padding:10px 8px;text-align:center;}
+  .stat-label{font-size:9px;letter-spacing:0;}
+  .stat-value{font-size:clamp(18px,6vw,28px);}
   .stat-sub{display:none;}
-  .stat-value{font-size:clamp(14px,5.5vw,24px);}
-  .stat-label{font-size:8px;}
 
-  /* Hide desktop table, show card lists */
+  /* --- Hide desktop table, reveal card lists --- */
   .tbl-wrap{display:none;}
   .req-list{display:flex;}
   .user-list{display:flex;}
 
-  /* Forms single column */
-  .form-row{grid-template-columns:1fr;}
+  /* --- Card chrome --- */
+  .card{margin-bottom:10px;border-radius:10px;}
+  .card-header{padding:10px 12px;gap:6px;flex-wrap:nowrap;}
+  .card-header h2{font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;}
 
-  /* Account page full width */
+  /* Refresh: icon-only on mobile */
+  .btn-refresh-label{display:none;}
+
+  /* New Request: short label on mobile */
+  .btn-new-full{display:none;}
+  .btn-new-short{display:inline;}
+
+  /* --- Filters --- */
+  .filters-wrap{padding:8px 10px;gap:5px;}
+  .filter-row{flex-direction:column;align-items:flex-start;gap:3px;}
+  .filter-label{font-size:9px;margin-bottom:1px;}
+  .filter-scroll{width:100%;padding-bottom:3px;}
+  .filter-chip{font-size:11px;padding:5px 11px;min-height:29px;}
+
+  /* --- Request cards --- */
+  .req-list{gap:8px;padding:10px;}
+  .req-card{background:white;border:1px solid var(--border);border-radius:10px;padding:12px 13px;gap:7px;box-shadow:0 1px 3px rgba(0,0,0,.05);}
+  .req-card-name{font-size:14px;font-weight:700;}
+  .req-card-meta-row{display:flex;flex-wrap:wrap;gap:5px 14px;margin-top:1px;}
+  .req-card-meta-item{display:flex;align-items:center;gap:4px;font-size:12px;color:var(--text-muted);line-height:1.3;}
+  .req-card-meta-item svg{opacity:.45;flex-shrink:0;width:12px;height:12px;}
+  .req-card-actions{display:flex;gap:8px;padding-top:8px;border-top:1px solid var(--border);margin-top:2px;}
+  .req-card-actions .btn{flex:1;justify-content:center;font-size:13px;padding:9px 8px;min-height:40px;}
+
+  /* --- User cards --- */
+  .user-list{gap:8px;padding:10px;}
+  .user-card{background:white;border:1px solid var(--border);border-radius:10px;padding:12px 13px;gap:7px;box-shadow:0 1px 3px rgba(0,0,0,.05);}
+  .user-card-actions .btn{flex:1;justify-content:center;font-size:13px;padding:9px 8px;min-height:40px;}
+
+  /* --- Forms --- */
+  .form-row{grid-template-columns:1fr;}
   #page-account .card{max-width:100%;}
 }
 
-/* Small phones (≤ 400px) — extra tightening */
+/* ── Small phones ≤ 400px ── */
 @media(max-width:400px){
-  .stats-row{gap:4px;}
-  .stat-card{padding:6px 4px;}
-  .stat-sub{display:none;}
-  .stat-label{font-size:8px;letter-spacing:0;}
-  .stat-value{font-size:clamp(14px,5vw,20px);}
   #content{padding:6px;}
-  .req-card-actions .btn{font-size:12px;padding:8px 4px;gap:4px;}
+  .stats-row{gap:4px;}
+  .stat-card{padding:8px 5px;}
+  .stat-value{font-size:clamp(16px,5.5vw,22px);}
+  .stat-label{font-size:8px;}
+  .req-list{padding:8px;}
+  .user-list{padding:8px;}
+  .req-card{padding:10px 11px;}
+  .req-card-actions .btn{font-size:12px;padding:8px 6px;gap:3px;}
   .req-card-actions .btn svg{width:13px;height:13px;}
-  .user-card-actions .btn{font-size:12px;padding:8px 4px;gap:4px;}
+  .user-card-actions .btn{font-size:12px;padding:8px 6px;gap:3px;}
+  .filter-chip{font-size:10px;padding:4px 9px;}
+  .card-header h2{font-size:13px;}
+}
+
+/* ── Extra-small phones ≤ 360px ── */
+@media(max-width:360px){
+  .stat-card{padding:7px 4px;}
+  .stat-value{font-size:clamp(14px,5vw,20px);}
+  .btn.btn-sm{padding:5px 8px;font-size:11px;}
+  .filter-chip{font-size:10px;padding:4px 8px;}
+  .req-card-name{font-size:13px;}
 }
 </style>
 </head>
@@ -447,12 +490,14 @@ textarea.form-input{resize:vertical;min-height:80px;}
         <div class="card">
           <div class="card-header">
             <h2>Assistance Requests</h2>
-            <button class="btn btn-ghost btn-sm" onclick="refreshData()" title="Refresh">
+            <button class="btn btn-ghost btn-sm" onclick="refreshData()" title="Refresh" aria-label="Refresh">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
+              <span class="btn-refresh-label">Refresh</span>
             </button>
             <button class="btn btn-primary btn-sm" onclick="openAddModal()">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
-              New Request
+              <span class="btn-new-full">New Request</span>
+              <span class="btn-new-short">New</span>
             </button>
           </div>
 
@@ -750,13 +795,32 @@ function showPage(page){
 }
 
 /* ── DATA ── */
+function showLoadingSkeleton(){
+  const skHtml=Array(3).fill(0).map(()=>`
+    <div class="sk-card">
+      <div style="display:flex;gap:8px;align-items:center">
+        <div class="skeleton sk-badge"></div>
+        <div class="skeleton sk-badge" style="width:70px"></div>
+      </div>
+      <div class="skeleton sk-line"></div>
+      <div class="skeleton sk-line-sm"></div>
+      <div style="display:flex;gap:8px;margin-top:4px">
+        <div class="skeleton sk-actions" style="flex:1"></div>
+        <div class="skeleton sk-actions" style="flex:1"></div>
+      </div>
+    </div>`).join('');
+  document.getElementById('requests-list').innerHTML=skHtml;
+  document.getElementById('requests-tbody').innerHTML='<tr><td colspan="7" style="text-align:center;padding:32px;color:var(--text-muted)">Loading…</td></tr>';
+  document.getElementById('requests-empty').style.display='none';
+}
 async function refreshData(){
+  showLoadingSkeleton();
   try{
     const res=await fetch(`${BASE_URL}/get-assistances`);
     state.requests=await res.json();
     renderRequests();
     updateStats();
-  }catch(e){console.error('Load failed',e);}
+  }catch(e){console.error('Load failed',e);document.getElementById('requests-list').innerHTML='<div class="empty"><p>Failed to load. Pull to refresh.</p></div>';}
 }
 async function loadUsers(){
   try{
@@ -826,7 +890,7 @@ function renderRequests(){
       </td>
     </tr>`).join('');
 
-  // Mobile cards — FIXED: always show both Edit and Delete buttons
+  // Mobile cards — improved layout with icon-labelled meta items
   document.getElementById('requests-list').innerHTML=f.map(r=>`
     <div class="req-card">
       <div class="req-card-name">${r.last_name}, ${r.first_name}</div>
@@ -834,12 +898,19 @@ function renderRequests(){
         ${typeBadge(r.assistanceType)}
         ${statusBadge(r.isCompleted)}
       </div>
-      <div class="req-card-row">
-        <span class="req-card-meta">${r.contactNumber||'—'}</span>
-        <span class="req-card-meta">·</span>
-        <span class="req-card-meta">${fmtAmt(r.amount)}</span>
-        <span class="req-card-meta">·</span>
-        <span class="req-card-meta">${fmtDate(r.createdAt)}</span>
+      <div class="req-card-meta-row">
+        ${r.contactNumber?`<span class="req-card-meta-item">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+          ${r.contactNumber}
+        </span>`:''}
+        ${r.amount?`<span class="req-card-meta-item">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/></svg>
+          ${fmtAmt(r.amount)}
+        </span>`:''}
+        <span class="req-card-meta-item">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/></svg>
+          ${fmtDate(r.createdAt)}
+        </span>
       </div>
       <div class="req-card-actions">
         <button class="btn btn-ghost" onclick="openEditModal('${r.id}')">
