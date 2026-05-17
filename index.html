@@ -734,10 +734,12 @@ textarea.form-input{resize:vertical;min-height:80px;}
 const BASE_URL='https://assistance-manager.onrender.com';
 let state={user:null,requests:[],users:[],editingId:null,editingUserId:null,searchQuery:'',typeFilter:'all',statusFilter:'all'};
 
-/* ── SESSION ── */
+/* ── SESSION + TOKEN ── */
 function getSession(){try{return JSON.parse(localStorage.getItem('am_s')||'null');}catch{return null;}}
 function setSession(d){localStorage.setItem('am_s',JSON.stringify(d));}
-function clearSession(){localStorage.removeItem('am_s');}
+function clearSession(){localStorage.removeItem('am_s');localStorage.removeItem('am_token');}
+function getToken(){return localStorage.getItem('am_token')||'';}
+function authHeaders(){return{'Content-Type':'application/json','Authorization':'Bearer '+getToken()};}
 
 /* ── LOGIN ── */
 async function handleLogin(){
@@ -750,7 +752,11 @@ async function handleLogin(){
   try{
     const res=await fetch(`${BASE_URL}/login`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:un,password:pw})});
     const data=await res.json();
-    if(data.success){setSession(data.user);initApp(data.user);}
+    if(data.success){
+      setSession(data.user);
+      localStorage.setItem('am_token',data.token||'');
+      initApp(data.user);
+    }
     else showErr(errEl,data.message||'Login failed. Please check your credentials.');
   }catch{showErr(errEl,'Cannot connect to server. Please check your internet.');}
   finally{btn.innerHTML='Sign In';btn.disabled=false;}
@@ -813,18 +819,22 @@ function showLoadingSkeleton(){
   document.getElementById('requests-tbody').innerHTML='<tr><td colspan="7" style="text-align:center;padding:32px;color:var(--text-muted)">Loading…</td></tr>';
   document.getElementById('requests-empty').style.display='none';
 }
+
 async function refreshData(){
   showLoadingSkeleton();
   try{
-    const res=await fetch(`${BASE_URL}/get-assistances`);
+    const res=await fetch(`${BASE_URL}/get-assistances`,{headers:{'Authorization':'Bearer '+getToken()}});
+    if(res.status===401||res.status===403){handleLogout();return;}
     state.requests=await res.json();
     renderRequests();
     updateStats();
   }catch(e){console.error('Load failed',e);document.getElementById('requests-list').innerHTML='<div class="empty"><p>Failed to load. Pull to refresh.</p></div>';}
 }
+
 async function loadUsers(){
   try{
-    const res=await fetch(`${BASE_URL}/get-users`);
+    const res=await fetch(`${BASE_URL}/get-users`,{headers:{'Authorization':'Bearer '+getToken()}});
+    if(res.status===401||res.status===403){handleLogout();return;}
     state.users=await res.json();
     renderUsers();
   }catch(e){console.error('Load users failed',e);}
@@ -890,7 +900,7 @@ function renderRequests(){
       </td>
     </tr>`).join('');
 
-  // Mobile cards — improved layout with icon-labelled meta items
+  // Mobile cards
   document.getElementById('requests-list').innerHTML=f.map(r=>`
     <div class="req-card">
       <div class="req-card-name">${r.last_name}, ${r.first_name}</div>
@@ -1061,7 +1071,7 @@ async function saveRequest(){
   btn.innerHTML='<span class="spinner"></span>';btn.disabled=true;errEl.style.display='none';
   try{
     const url=state.editingId?`${BASE_URL}/update-assistance/${state.editingId}`:`${BASE_URL}/create-assistance`;
-    const res=await fetch(url,{method:state.editingId?'PUT':'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+    const res=await fetch(url,{method:state.editingId?'PUT':'POST',headers:authHeaders(),body:JSON.stringify(body)});
     const data=await res.json();
     if(data.success||res.ok){closeModal('request-modal');await refreshData();}
     else showErr(errEl,data.message||'Failed to save request.');
@@ -1070,8 +1080,10 @@ async function saveRequest(){
 }
 async function deleteRequest(id){
   if(!await showConfirm('Delete Request','Delete this request? This cannot be undone.','Delete'))return;
-  try{await fetch(`${BASE_URL}/delete-assistance/${id}`,{method:'DELETE'});await refreshData();}
-  catch{alert('Failed to delete.');}
+  try{
+    await fetch(`${BASE_URL}/delete-assistance/${id}`,{method:'DELETE',headers:{'Authorization':'Bearer '+getToken()}});
+    await refreshData();
+  }catch{alert('Failed to delete.');}
 }
 
 /* ── USER MODAL ── */
@@ -1110,7 +1122,7 @@ async function saveUser(){
   try{
     let res;
     if(state.editingUserId){
-      res=await fetch(`${BASE_URL}/admin-update-user/${state.editingUserId}`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({full_name:fn,username:un,role})});
+      res=await fetch(`${BASE_URL}/admin-update-user/${state.editingUserId}`,{method:'PUT',headers:authHeaders(),body:JSON.stringify({full_name:fn,username:un,role})});
     }else{
       const parts=fn.split(' ');
       res=await fetch(`${BASE_URL}/register`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({first_name:parts[0],middle_name:parts.length>2?parts.slice(1,-1).join(' '):'',last_name:parts.length>1?parts[parts.length-1]:parts[0],username:un,password:pw,role})});
@@ -1123,8 +1135,10 @@ async function saveUser(){
 }
 async function deleteUser(id,name){
   if(!await showConfirm('Delete User',`Delete "${name}"? This cannot be undone.`,'Delete'))return;
-  try{await fetch(`${BASE_URL}/delete-user/${id}`,{method:'DELETE'});loadUsers();}
-  catch{alert('Failed to delete.');}
+  try{
+    await fetch(`${BASE_URL}/delete-user/${id}`,{method:'DELETE',headers:{'Authorization':'Bearer '+getToken()}});
+    loadUsers();
+  }catch{alert('Failed to delete.');}
 }
 
 /* ── ACCOUNT ── */
@@ -1139,7 +1153,7 @@ async function saveAccount(){
   if(cp&&np){body.current_password=cp;body.new_password=np;}
   btn.innerHTML='<span class="spinner spinner-dark"></span>';btn.disabled=true;
   try{
-    const res=await fetch(`${BASE_URL}/update-account/${state.user.user_id}`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+    const res=await fetch(`${BASE_URL}/update-account/${state.user.user_id}`,{method:'PUT',headers:authHeaders(),body:JSON.stringify(body)});
     const data=await res.json();
     alertEl.style.display='flex';
     if(data.success){alertEl.className='alert alert-success';alertEl.textContent='Account updated successfully!';state.user.full_name=fn;state.user.username=un;setSession(state.user);document.getElementById('sb-fullname').textContent=fn;document.getElementById('acc-current-pw').value='';document.getElementById('acc-new-pw').value='';}
